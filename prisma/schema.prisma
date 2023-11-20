@@ -18,6 +18,7 @@ model Role {
   deletedAt DateTime?
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
+  User      User[]
 }
 
 model Account {
@@ -53,8 +54,14 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  password      String
+  phoneNumber   String?
+  address       String?
   accounts      Account[]
   sessions      Session[]
+
+  roleId String?
+  role   Role?   @relation(fields: [roleId], references: [id])
 
   carWashId String?
   carWash   CarWash? @relation("userToCarWash", fields: [carWashId], references: [id])
@@ -66,6 +73,16 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Menu {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  url       String    @unique
+  icon      String    @unique
+  listOrder Int       @unique
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model Service {
@@ -80,6 +97,17 @@ model Service {
   updatedAt DateTime? @updatedAt
 }
 
+model CarType {
+  id   String @id @default(cuid())
+  type String
+
+  deletedAt DateTime?
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  CarWashService CarWashService[]
+}
+
 model CarWashService {
   id        String  @id @default(cuid())
   carWash   CarWash @relation(fields: [carWashId], references: [id])
@@ -88,6 +116,8 @@ model CarWashService {
   serviceId String
   cost      Float // Cost of the service at this car wash
   status    Boolean @default(true)
+  carTypeId String
+  carType   CarType @relation(fields: [carTypeId], references: [id])
 
   deletedAt DateTime?
   createdAt DateTime? @default(now())
@@ -96,15 +126,17 @@ model CarWashService {
 
 model CarWash {
   id       String  @id @default(cuid())
-  name     String
+  name     String  @unique
+  path     String  @unique
+  logo     String
   location String
   mapsLink String? // Add the mapsLink field to store the link for directions
-
+  branch   String?
   // Other fields as needed
 
   // Define a relationship to users (staff members)
-  staff          User[]           @relation("userToCarWash")
-  carWashService CarWashService[]
+  staff           User[]           @relation("userToCarWash")
+  carWashServices CarWashService[]
 
   deletedAt DateTime?
   createdAt DateTime? @default(now())

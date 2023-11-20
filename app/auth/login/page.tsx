@@ -34,7 +34,7 @@ export default function SignIn() {
 	// 	return redirect('/');
 	// }
 	return (
-		<div className="flex h-screen bg-primary-50 z-[3]">
+		<div className="flex bg-primary-50 z-[3] fixed top-0 left-0 w-full h-full">
 			<div className="z-[3] m-auto bg-slate-50 rounded-md w-3/5 h-3/4 grid lg:grid-cols-2 ">
 				<div className="flex w-full h-full flex-col bg-gradient-to-r from-blue-500 to-indigo-500 rounded-l-md z-[3] ">
 					<div className="flex flex-col mt-5 px-5 space-y-4">
