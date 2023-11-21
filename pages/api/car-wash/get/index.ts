@@ -8,6 +8,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 				orderBy: {
 					createdAt: 'asc',
 				},
+				select: {
+					id: true,
+					name: true,
+					path: true,
+					logo: true,
+					location: true,
+					mapsLink: true,
+					branch: true,
+					carWashServices: {
+						select: {
+							id: true,
+							carWashId: true,
+							serviceId: true,
+							cost: true,
+							status: true,
+							service: {
+								select: {
+									id: true,
+									name: true,
+									description: true,
+								},
+							},
+						},
+					},
+				},
 			});
 			return res.status(200).json(data);
 		} catch (err) {

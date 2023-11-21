@@ -11,6 +11,7 @@ import { useRef, useState } from 'react';
 import Image from 'next/image';
 import logo_placeholder from '@/public/assets/images/logo-placeholder-image.png';
 import CarWashServiceForm from './CarWashServices';
+import { Icon } from '@iconify/react/dist/iconify.js';
 
 interface CarWashForm {
 	name: string;
@@ -32,10 +33,27 @@ interface CarWashFormFormProps {
 	initialValues?: CarWashForm;
 	isPending: boolean;
 }
-export default function CarWashForm() {
+export default function CarWashForm({ onSubmit, initialValues, isPending }: CarWashFormFormProps) {
 	const [accValue, setAccValue] = useState('one');
 	const [selectedLogo, setSelectedLogo] = useState<string>('');
 	const logoRef = useRef<HTMLInputElement>(null);
+	const [carWashServices, setCarWashServices] = useState<any>([
+		{
+			serviceId: '',
+			cost: 0,
+			carTypeId: '',
+		},
+	]);
+
+	const {
+		register,
+		handleSubmit,
+		setValue,
+		watch,
+		formState: { errors },
+	} = useForm<CarWashForm>({
+		defaultValues: initialValues,
+	});
 
 	const handleContinueClick = (newValue: string) => {
 		setAccValue(newValue);
@@ -58,10 +76,48 @@ export default function CarWashForm() {
 			setSelectedLogo(base64Image);
 		}
 	};
-	// console.log(selectedLogo);
 
+	const handleAddCarWashService = () => {
+		const newItem = {
+			serviceId: '',
+			cost: 0,
+			carTypeId: '',
+		};
+		setCarWashServices([...carWashServices, newItem]);
+	};
+
+	const handleRemoveCarWashService = (index: any) => {
+		const updatedItems = [...carWashServices];
+		updatedItems.splice(index, 1);
+		setCarWashServices(updatedItems);
+	};
+
+	const handleChangeCarWashService = (index: any, event: any) => {
+		const { name, value } = event.target;
+		const updatedItems = [...carWashServices];
+		updatedItems[index][name] = value;
+		setCarWashServices(updatedItems);
+	};
+
+	const handleSubmitForm: SubmitHandler<CarWashForm> = (data) => {
+		try {
+			if (selectedLogo) {
+				data.logo = selectedLogo;
+			} else {
+				data.logo = logo_placeholder.src;
+			}
+			if (carWashServices) {
+				data.carWashServices = carWashServices;
+			}
+
+			// console.log('Form Data:', data);
+			onSubmit(data);
+		} catch (error) {
+			console.error('Error in handleSubmitForm:', error);
+		}
+	};
 	return (
-		<form className="md:w-4/6 w-full">
+		<form className="md:w-4/6 w-full" onSubmit={handleSubmit(handleSubmitForm)}>
 			<Accordion
 				type="single"
 				value={accValue}
@@ -126,12 +182,12 @@ export default function CarWashForm() {
 											htmlFor="name"
 											className="block text-xs font-medium text-secondary-700"
 										>
-											Name
+											Name <sup className="text-red-500">*</sup>
 										</label>
 										<input
 											type="text"
-											name="name"
 											id="name"
+											{...register('name', { required: true })}
 											className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 										/>
 									</div>
@@ -140,12 +196,12 @@ export default function CarWashForm() {
 											htmlFor="path"
 											className="block text-xs font-medium text-secondary-700"
 										>
-											Path
+											Path <sup className="text-red-500">*</sup>
 										</label>
 										<input
 											type="text"
-											name="path"
 											id="path"
+											{...register('path', { required: true })}
 											className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 										/>
 									</div>
@@ -154,12 +210,12 @@ export default function CarWashForm() {
 											htmlFor="branch"
 											className="block text-xs font-medium text-secondary-700"
 										>
-											Branch
+											Branch <sup className="text-red-500">*</sup>
 										</label>
 										<input
 											type="text"
-											name="branch"
 											id="branch"
+											{...register('branch', { required: true })}
 											className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 										/>
 									</div>
@@ -168,12 +224,12 @@ export default function CarWashForm() {
 											htmlFor="location"
 											className="block text-xs font-medium text-secondary-700"
 										>
-											Location
+											Location <sup className="text-red-500">*</sup>
 										</label>
 										<input
 											type="text"
-											name="location"
 											id="location"
+											{...register('location', { required: true })}
 											className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 										/>
 									</div>
@@ -182,12 +238,12 @@ export default function CarWashForm() {
 											htmlFor="mapsLink"
 											className="block text-xs font-medium text-secondary-700"
 										>
-											Maps Link
+											Maps Link <sup className="text-red-500">*</sup>
 										</label>
 										<input
 											type="text"
-											name="mapsLink"
 											id="mapsLink"
+											{...register('mapsLink', { required: true })}
 											className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 										/>
 									</div>
@@ -214,13 +270,37 @@ export default function CarWashForm() {
 							<div className="bg-secondary-200 text-white flex items-center justify-center text-xs p-2 h-4 w-4 rounded-full ">
 								2
 							</div>
-							<span>Services</span>
+
+							<span className="text-base font-semibold text-secondary-600">
+								Services
+								<span className="text-xs font-semibold text-secondary-600/70 flex items-center">
+									Click the + icon to add a new item and the
+									<Icon icon="heroicons:trash-solid" /> icon to delete an item
+								</span>
+							</span>
 						</div>
 					</AccordionTrigger>
 					<AccordionContent>
 						<div className="flex flex-col border rounded-b-lg bg-primary-50 p-4">
-							<div className="w-full ">
-								<CarWashServiceForm />
+							<div className="flex w-full divide-solid py-2">
+								<button
+									type="button"
+									onClick={handleAddCarWashService}
+									className="bg-primary-600 text-white text-sm flex items-center p-2 rounded-md"
+								>
+									<Icon icon="heroicons:plus" /> <span> Add A Purchase Item</span>
+								</button>
+							</div>
+							<div className="w-full flex flex-col space-y-3">
+								{carWashServices.map((item: any, index: any) => (
+									// console.log('Item:', item)
+									<CarWashServiceForm
+										key={index}
+										initialValues={item}
+										onClick={() => handleRemoveCarWashService(index)}
+										onChange={(e) => handleChangeCarWashService(index, e)}
+									/>
+								))}
 							</div>
 							<div className="w-full flex items-center py-2 justify-center">
 								<button
