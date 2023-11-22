@@ -28,12 +28,12 @@ interface CarWashForm {
 		},
 	];
 }
-interface CarWashFormFormProps {
+interface CarWashFormProps {
 	onSubmit: SubmitHandler<CarWashForm>;
 	initialValues?: CarWashForm;
 	isPending: boolean;
 }
-export default function CarWashForm({ onSubmit, initialValues, isPending }: CarWashFormFormProps) {
+export default function CarWashForm({ onSubmit, initialValues, isPending }: CarWashFormProps) {
 	const [accValue, setAccValue] = useState('one');
 	const [selectedLogo, setSelectedLogo] = useState<string>('');
 	const logoRef = useRef<HTMLInputElement>(null);
@@ -48,8 +48,6 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 	const {
 		register,
 		handleSubmit,
-		setValue,
-		watch,
 		formState: { errors },
 	} = useForm<CarWashForm>({
 		defaultValues: initialValues,
@@ -190,6 +188,11 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 											{...register('name', { required: true })}
 											className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 										/>
+										{errors.name && (
+											<p className="text-xs text-red-500">
+												Please enter a valid name
+											</p>
+										)}
 									</div>
 									<div className="col-span-6 space-y-1">
 										<label
@@ -201,9 +204,18 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 										<input
 											type="text"
 											id="path"
-											{...register('path', { required: true })}
+											{...register('path', {
+												required: true,
+												pattern: /^[a-zA-Z]{3}-[a-zA-Z]{3}(-[a-zA-Z]{3})?$/,
+											})}
 											className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 										/>
+										{errors.path && (
+											<p className="text-xs text-red-500">
+												Please enter a valid pattern like
+												&apos;abc-abc&apos; or &apos;abc-abc-abc&apos;.
+											</p>
+										)}
 									</div>
 									<div className="col-span-6 space-y-1">
 										<label

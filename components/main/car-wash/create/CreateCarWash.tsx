@@ -24,17 +24,17 @@ export default function CreateCarWash() {
 		},
 		onSuccess: (data: any) => {
 			toast.success('Car Wash Was Successful', { id: toastId });
-			router.push(`/car-wash/${data?.id}`);
+			router.push(`/car-wash/${data?.path}`);
 		},
 	});
 
-	const handleCreateLeave = (data: any) => {
+	const handleCreateCarWash = (data: any) => {
 		// console.log('Data:', data);
 		mutate(data);
 	};
 	return (
 		<>
-			<CarWashForm onSubmit={handleCreateLeave} isPending={isPending} />
+			<CarWashForm onSubmit={handleCreateCarWash} isPending={isPending} />
 		</>
 	);
 }

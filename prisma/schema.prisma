@@ -50,15 +50,21 @@ model Session {
 
 model User {
   id            String    @id @default(cuid())
-  name          String?
+  firstName     String?
+  lastName      String?
   email         String?   @unique
   emailVerified DateTime?
   image         String?
   password      String
   phoneNumber   String?
   address       String?
-  accounts      Account[]
-  sessions      Session[]
+  about         String?
+  city          String?
+  stateProvince String?
+  zipPostalCode String?
+
+  accounts Account[]
+  sessions Session[]
 
   roleId String?
   role   Role?   @relation(fields: [roleId], references: [id])
@@ -66,7 +72,7 @@ model User {
   carWashId String?
   carWash   CarWash? @relation("userToCarWash", fields: [carWashId], references: [id])
 
-  CarWash CarWash[]
+  // CarWash CarWash[]
 }
 
 model VerificationToken {
@@ -127,16 +133,17 @@ model CarWashService {
 }
 
 model CarWash {
-  id              String           @id @default(cuid())
-  name            String           @unique
-  path            String           @unique
-  logo            String
-  location        String
-  mapsLink        String? // Add the mapsLink field to store the link for directions
-  branch          String?
-  // Other fields as needed
-  createdById     String?
-  createdBy       User?            @relation(fields: [userId], references: [id])
+  id       String  @id @default(cuid())
+  name     String  @unique
+  path     String  @unique
+  logo     String
+  location String
+  mapsLink String? // Add the mapsLink field to store the link for directions
+  branch   String?
+
+  // createdById     String?
+  // createdBy       User?            @relation(fields: [userId], references: [id])
+
   // Define a relationship to users (staff members)
   staff           User[]           @relation("userToCarWash")
   carWashServices CarWashService[]
@@ -144,5 +151,4 @@ model CarWash {
   deletedAt DateTime?
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
-  userId    String
 }

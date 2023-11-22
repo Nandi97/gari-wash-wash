@@ -1,4 +1,4 @@
-import CreateCarWash from '@/components/main/admin/create/CreateCarWash';
+import CreateCarWash from '@/components/main/car-wash/create/CreateCarWash';
 
 export default function Create() {
 	return (
