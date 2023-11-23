@@ -2,6 +2,7 @@
 import StaffForm from '@/components/forms/staff/StaffForm';
 import { useMutation } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
@@ -9,9 +10,12 @@ export default function CreateStaff() {
 	const router = useRouter();
 	let toastId: string;
 
+	const session = useSession();
+	console.log(JSON.stringify(session));
+
 	const { mutate, isPending } = useMutation({
 		mutationFn: async (data: any) => {
-			const response = await axios.post('/api/car-wash/post', data);
+			const response = await axios.post('/api/staff/post', data);
 			return response.data;
 		},
 
@@ -35,7 +39,7 @@ export default function CreateStaff() {
 
 	return (
 		<div>
-			<StaffForm onFormSubmit={handleStaff} isPending={isPending} />
+			<StaffForm onSubmit={handleStaff} isPending={isPending} />
 		</div>
 	);
 }

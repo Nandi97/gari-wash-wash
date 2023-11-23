@@ -5,6 +5,13 @@ import { useRef, useState } from 'react';
 import usr_avatar from '@/public/assets/images/user-avatar.webp';
 import { registerStaffValidate } from '@/lib/validate';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import axios from 'axios';
+import { useQuery } from '@tanstack/react-query';
+
+interface Roles {
+	id: string;
+	name: string;
+}
 
 interface StaffForm {
 	firstName: string;
@@ -27,6 +34,10 @@ interface StaffFormProps {
 	initialValues?: StaffForm;
 	isPending: boolean;
 }
+const fetchAllRoles = async () => {
+	const response = await axios.get('/api/roles/get');
+	return response.data;
+};
 
 export default function StaffForm({ onSubmit, initialValues, isPending }: StaffFormProps) {
 	const [selectedImage, setSelectedImage] = useState<string>('');
@@ -40,7 +51,12 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 		defaultValues: initialValues,
 	});
 
-	// console.log('Errors', errors);
+	const { data: roles } = useQuery<Roles[]>({
+		queryFn: fetchAllRoles,
+		queryKey: ['roles'],
+	});
+
+	// console.log('Roles', roles);
 
 	const convertToBase64 = (file: File): Promise<string> => {
 		return new Promise((resolve, reject) => {
@@ -60,10 +76,12 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 		}
 	};
 	const handleSubmitForm: SubmitHandler<StaffForm> = (data) => {
-		console.log('Submitting form...');
-		console.log(data);
+		data.image = selectedImage;
 
-		// onSubmit(data);
+		// console.log('Submitting form...');
+		// console.log(data);
+
+		onSubmit(data);
 	};
 
 	return (
@@ -210,7 +228,7 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 												className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 											/>
 										</div>
-										<div className="col-span-6 sm:col-span-4 space-y-1">
+										<div className="col-span-6 sm:col-span-2 space-y-1">
 											<label
 												htmlFor="email"
 												className="block text-xs font-medium text-secondary-700"
@@ -225,6 +243,41 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 											/>
 										</div>
 
+										<div className="col-span-6 sm:col-span-2 space-y-1">
+											<label
+												htmlFor="phone-number"
+												className="block text-xs font-medium text-secondary-700"
+											>
+												Staff Role
+											</label>
+											<select
+												{...register('roleId', { required: true })}
+												id="phone-number"
+												className={`${
+													errors.roleId
+														? 'bg-red-50 border-red-300'
+														: 'bg-secondary-50 border-secondary-300'
+												} sm:text-sm w-full  bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1`}
+											>
+												<option
+													selected
+													disabled
+													value=""
+													className="text-opacity-50 text-secondary-700"
+												>
+													--Select Role--
+												</option>
+												{roles ? (
+													roles?.map((item) => (
+														<option key={item?.id} value={item?.id}>
+															{item?.name}
+														</option>
+													))
+												) : (
+													<></>
+												)}
+											</select>
+										</div>
 										<div className="col-span-6 space-y-1">
 											<label
 												htmlFor="address"
