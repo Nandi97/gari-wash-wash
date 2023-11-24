@@ -12,7 +12,7 @@ datasource db {
 
 model Role {
   id          String  @id @default(cuid())
-  name        String
+  name        String  @unique
   description String?
 
   deletedAt DateTime?

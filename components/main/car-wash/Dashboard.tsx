@@ -1,5 +1,6 @@
 'use client';
 import CarWashCard from '@/components/my-ui/CarWashCard';
+import { getAuthenticatedUser } from '@/lib/auth-user';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
@@ -21,6 +22,11 @@ export default function AdminDashboard() {
 		queryFn: fetchAllCarWashes,
 		queryKey: ['carwashes'],
 	});
+	// console.log(session?.user);
+
+	// const user = getAuthenticatedUser(session);
+
+	// console.log(user);
 
 	return (
 		<div className="grid grid-cols-12 gap-4">

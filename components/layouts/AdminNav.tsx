@@ -2,8 +2,19 @@ import Image from 'next/image';
 import Link from 'next/link';
 import logo from '@/public/assets/images/gari_was_wash_logo.png';
 import NavMenu from './AdminNavMenu';
+import Logged from './Logged';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/pages/api/auth/[...nextauth]';
+
+export async function getSessionData() {
+	const session = await getServerSession(authOptions);
+	// console.log(session)
+	return session;
+}
 
 export default async function Nav({ pageTitle }: any) {
+	const session: any = await getSessionData();
+
 	return (
 		<nav className="w-full shadow-sm shadow-slate-400 bg-primary-400/30 h-10 justify-between p-1 flex items-center px-3">
 			<div className="flex items-center flex-shrink-0 divide-x divide-secondary-300 space-x-3">
@@ -24,6 +35,16 @@ export default async function Nav({ pageTitle }: any) {
 			</div>
 			<div className="flex space-x-2 items-center justify-center h-full">
 				<NavMenu />
+				{session ? (
+					<Logged
+						id={session?.user?.id}
+						image={session?.user?.image || ''}
+						name={session?.user?.name}
+						designation={session?.user?.role?.name}
+					/>
+				) : (
+					<></>
+				)}
 			</div>
 		</nav>
 	);

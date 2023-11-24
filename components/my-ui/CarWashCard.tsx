@@ -13,7 +13,7 @@ export default function CarWashCard({ name, path, logo, location, mapsLink }: Ca
 	return (
 		<Link
 			href={`/car-wash/${path}`}
-			className="relative shadow rounded-md bg-primary-200 md:col-span-3 col-span-12 p-2 flex flex-col group hover:shadow-md"
+			className="relative shadow rounded-md bg-primary-200 md:col-span-3 col-span-12 p-2 flex flex-col group hover:shadow-md z-0"
 		>
 			<div className="flex">
 				<Image

@@ -14,7 +14,7 @@ export default async function Home() {
 	metadata.title = 'Admin Dashboard';
 	const session = await getSessionData();
 
-	// console.log(session);
+	console.log(session);
 
 	return (
 		<div>
