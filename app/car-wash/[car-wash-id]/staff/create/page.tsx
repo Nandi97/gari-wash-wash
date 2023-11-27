@@ -1,4 +1,4 @@
-import CreateStaff from '@/components/main/staff/create/CreateStaff';
+import CreateStaff from '@/components/main/staff/Create';
 
 export default function Create() {
 	return (

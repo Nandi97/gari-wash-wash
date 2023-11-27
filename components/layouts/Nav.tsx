@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import logo from '@/public/assets/images/gari_was_wash_logo.png';
-import NavMenu from './AdminNavMenu';
+import NavMenu from './NavMenu';
 import Logged from './Logged';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
@@ -34,14 +34,16 @@ export default async function Nav({ pageTitle }: any) {
 				<div className="font-extralight px-2 text-base text-secondary-600">{pageTitle}</div>
 			</div>
 			<div className="flex space-x-2 items-center justify-center h-full">
-				<NavMenu />
 				{session ? (
-					<Logged
-						id={session?.user?.id}
-						image={session?.user?.image || ''}
-						name={session?.user?.name}
-						designation={session?.user?.role?.name}
-					/>
+					<>
+						<NavMenu user={session?.user} />
+						<Logged
+							id={session?.user?.id}
+							image={session?.user?.image || ''}
+							name={session?.user?.name}
+							designation={session?.user?.role?.name}
+						/>
+					</>
 				) : (
 					<></>
 				)}

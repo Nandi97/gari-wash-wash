@@ -3,6 +3,7 @@ import { metadata } from './layout';
 import AdminDashboard from '@/components/main/car-wash/Dashboard';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
+import { redirect } from 'next/navigation';
 
 export async function getSessionData() {
 	const session: any = await getServerSession(authOptions);
@@ -11,14 +12,17 @@ export async function getSessionData() {
 }
 
 export default async function Home() {
-	metadata.title = 'Admin Dashboard';
+	metadata.title = 'Car Washes Dashboard';
 	const session = await getSessionData();
 
-	console.log(session);
+	if (!session) {
+		return redirect('/auth/login');
+	}
 
-	return (
-		<div>
-			<AdminDashboard />
-		</div>
-	);
+	// console.log(session);
+
+	if (session?.user?.role?.name !== 'Super Admin') {
+		return redirect(`/car-wash/${session?.user?.carWash?.path}`);
+	}
+	return <div>Main Dashboard</div>;
 }

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
 import './globals.css';
 import { Providers } from './auth/provider';
-import Nav from '@/components/layouts/AdminNav';
+import Nav from '@/components/layouts/Nav';
 import QueryWrapper from './QueryWrapper';
 
 const roboto = Roboto({

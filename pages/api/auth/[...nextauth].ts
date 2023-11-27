@@ -54,7 +54,7 @@ export const authOptions: NextAuthOptions = {
 
 				// Example usage
 				const generatedKey = generate32BitKey();
-				console.log('User:', user);
+				// console.log('User:', user);
 				return {
 					id: user.id + '',
 					email: user.email,

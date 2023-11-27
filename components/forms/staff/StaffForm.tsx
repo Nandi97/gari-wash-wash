@@ -7,6 +7,7 @@ import { registerStaffValidate } from '@/lib/validate';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
 
 interface Roles {
 	id: string;
@@ -28,6 +29,7 @@ interface StaffForm {
 	zipPostalCode: string;
 	roleId: string;
 	carWashId: string;
+	createdById: string;
 }
 interface StaffFormProps {
 	onSubmit: SubmitHandler<StaffForm>;
@@ -40,6 +42,7 @@ const fetchAllRoles = async () => {
 };
 
 export default function StaffForm({ onSubmit, initialValues, isPending }: StaffFormProps) {
+	const { data: session } = useSession();
 	const [selectedImage, setSelectedImage] = useState<string>('');
 	const imageRef = useRef<HTMLInputElement>(null);
 	const {
@@ -55,8 +58,6 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 		queryFn: fetchAllRoles,
 		queryKey: ['roles'],
 	});
-
-	// console.log('Roles', roles);
 
 	const convertToBase64 = (file: File): Promise<string> => {
 		return new Promise((resolve, reject) => {
@@ -76,12 +77,25 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 		}
 	};
 	const handleSubmitForm: SubmitHandler<StaffForm> = (data) => {
-		data.image = selectedImage;
+		try {
+			if (selectedImage) {
+				data.image = selectedImage;
+			} else {
+				data.image = '';
+			}
 
-		// console.log('Submitting form...');
-		// console.log(data);
+			if (!session || !session.user) {
+				throw new Error('Session user ID is missing. Cannot submit the form.');
+			}
 
-		onSubmit(data);
+			data.createdById = session.user.id;
+			data.carWashId = session.user.carWash.id;
+
+			onSubmit(data);
+		} catch (error) {
+			// Handle the error appropriately, you can log it or show a user-friendly message
+			console.error('An error occurred while submitting the form:', error);
+		}
 	};
 
 	return (
@@ -260,8 +274,8 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 												} sm:text-sm w-full  bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1`}
 											>
 												<option
-													selected
 													disabled
+													defaultValue=""
 													value=""
 													className="text-opacity-50 text-secondary-700"
 												>

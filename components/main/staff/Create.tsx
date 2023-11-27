@@ -2,16 +2,12 @@
 import StaffForm from '@/components/forms/staff/StaffForm';
 import { useMutation } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
 export default function CreateStaff() {
 	const router = useRouter();
 	let toastId: string;
-
-	const session = useSession();
-	console.log(JSON.stringify(session));
 
 	const { mutate, isPending } = useMutation({
 		mutationFn: async (data: any) => {
@@ -27,8 +23,11 @@ export default function CreateStaff() {
 			}
 		},
 		onSuccess: (data: any) => {
+			// console.log(data);
 			toast.success('Staff Was Successful', { id: toastId });
-			router.push(`/${data?.path}`);
+			if (data) {
+				router.push(`/car-wash/${data?.carWashId}/staff/${data?.id}`);
+			}
 		},
 	});
 

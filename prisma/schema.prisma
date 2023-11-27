@@ -63,6 +63,9 @@ model User {
   stateProvince String?
   zipPostalCode String?
 
+  createdById String?
+  createdBy   User?   @relation(name: "Creator", fields: [createdById], references: [id])
+
   accounts Account[]
   sessions Session[]
 
@@ -72,7 +75,8 @@ model User {
   carWashId String?
   carWash   CarWash? @relation("userToCarWash", fields: [carWashId], references: [id])
 
-  // CarWash CarWash[]
+  User    User[]    @relation("Creator")
+  CarWash CarWash[] @relation("CarWashCreator")
 }
 
 model VerificationToken {
@@ -141,8 +145,8 @@ model CarWash {
   mapsLink String? // Add the mapsLink field to store the link for directions
   branch   String?
 
-  // createdById     String?
-  // createdBy       User?            @relation(fields: [userId], references: [id])
+  createdById String?
+  createdBy   User?   @relation("CarWashCreator", fields: [createdById], references: [id])
 
   // Define a relationship to users (staff members)
   staff           User[]           @relation("userToCarWash")

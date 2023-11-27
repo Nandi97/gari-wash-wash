@@ -7,6 +7,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		const formData = req.body;
 		const {
 			about,
+			createdById,
+			carWashId,
 			firstName,
 			lastName,
 			phoneNumber,
@@ -37,11 +39,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		}
 		const hashedPassword = await bcrypt.hash(password, 10);
 
-		console.log('Hashed Password:', hashedPassword);
+		// console.log('Hashed Password:', hashedPassword);
 
 		const result = await prisma.user.create({
 			data: {
 				firstName,
+				createdById,
+				carWashId,
 				lastName,
 				about,
 				image,
@@ -55,6 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			},
 		});
 		res.status(200).json(result);
+		// console.log('Result:', result);
 	} catch (err: any) {
 		console.log('Error when creating Leave Application', err.message);
 		res.status(403).json({ err: 'Error has occurred while creating leave Application' });

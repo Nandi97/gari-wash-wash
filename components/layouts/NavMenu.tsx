@@ -22,7 +22,11 @@ const fetchAllMenus = async () => {
 	return response.data;
 };
 
-export default function NavMenu() {
+interface NavMenuProps {
+	user?: any;
+}
+
+export default function NavMenu({ user }: NavMenuProps) {
 	const pathname = usePathname();
 	const { data } = useQuery<MenuProps[]>({
 		queryFn: fetchAllMenus,
@@ -52,21 +56,35 @@ export default function NavMenu() {
 					>
 						<Menu.Items className="absolute right-8 w-56 mt-2 z-50 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none p-4">
 							<div className="px-1 z-50  py-1 flex flex-col w-full space-y-2">
-								{data?.map((item) => (
-									<Menu.Item
-										as="a"
-										key={item?.id}
-										href={item?.url}
-										className={`${
-											pathname === item?.url
-												? 'bg-slate-200 '
-												: 'text-gray-900'
-										} flex items-center p-2 space-x-2 text-secondary-600 hover:bg-slate-200 rounded-md`}
-									>
-										<Icon icon={item?.icon} className="text-xl h-5 w-5" />
-										<span className="text-base text-center">{item?.name}</span>
-									</Menu.Item>
-								))}
+								{data && user
+									? data?.map((item) => (
+											<Menu.Item
+												as="a"
+												key={item?.id}
+												href={
+													user?.role?.name === 'Super Admin' &&
+													item?.name === 'Dashboard'
+														? item?.url
+														: `/car-wash/${user?.carWash?.path}/${item?.url}`
+												}
+												className={`${
+													pathname === item?.url ||
+													pathname ===
+														`/car-wash/${user?.carWash?.path}/${item?.url}`
+														? 'bg-slate-200 '
+														: 'text-gray-900'
+												} flex items-center p-2 space-x-2 text-secondary-600 hover:bg-slate-200 rounded-md`}
+											>
+												<Icon
+													icon={item?.icon}
+													className="text-xl h-5 w-5"
+												/>
+												<span className="text-base text-center">
+													{item?.name}
+												</span>
+											</Menu.Item>
+									  ))
+									: ''}
 							</div>
 						</Menu.Items>
 					</Transition>

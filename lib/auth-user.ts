@@ -17,7 +17,7 @@ export const getAsyncAuthenticatedUser = async (session: any) => {
 				carWash: true,
 			},
 		});
-		console.log(user);
+		// console.log(user);
 		return user;
 	} catch (error) {
 		console.error('Error fetching authenticated user:', error);
@@ -42,7 +42,7 @@ export const getAuthenticatedUser = (session: any) => {
 				carWash: true,
 			},
 		});
-		console.log(user);
+		// console.log(user);
 		return user;
 	} catch (error) {
 		console.error('Error fetching authenticated user:', error);
