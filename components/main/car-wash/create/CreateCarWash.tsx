@@ -24,7 +24,7 @@ export default function CreateCarWash() {
 		},
 		onSuccess: (data: any) => {
 			toast.success('Car Wash Was Successful', { id: toastId });
-			router.push(`/car-wash/${data?.path}`);
+			router.push(`/car-wash/${data?.id}`);
 		},
 	});
 

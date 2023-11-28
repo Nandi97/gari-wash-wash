@@ -1,27 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '@/lib/prisma';
+import bcrypt from 'bcrypt';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	try {
 		const formData = req.body;
-		const {
-			about,
-			designationId,
-			createdById,
-			carWashId,
-			name,
-			phoneNumber,
-			email,
-			address,
-			city,
-			stateProvince,
-			zipPostalCode,
-			image,
-		} = formData;
-		// console.log('FormData:', formData);
+		const { createdById, carWashId, name, email, password, image, roleId } = formData;
 
-		if (!name || !email || !phoneNumber || !createdById || !designationId) {
-			// return new NextResponse('Missing Fields', { status: 400 });
+		if (!name || !email || !password || !roleId) {
 			return res.status(400).json({ err: 'Missing Fields' });
 		}
 
@@ -34,21 +20,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		if (exist) {
 			throw new Error('Email already exists');
 		}
+		const hashedPassword = await bcrypt.hash(password, 10);
 
-		const result = await prisma.staff.create({
+		const result = await prisma.user.create({
 			data: {
+				roleId,
 				name,
 				createdById,
 				carWashId,
-				designationId,
-				about,
 				image,
 				email,
-				phoneNumber,
-				address,
-				city,
-				stateProvince,
-				zipPostalCode,
+				password: hashedPassword,
 			},
 		});
 		res.status(200).json(result);

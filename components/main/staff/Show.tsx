@@ -17,8 +17,15 @@ export default function ShowStaff() {
 
 	const { data, isPending } = useQuery({
 		queryKey: ['detailStaff'],
-		queryFn: () => fetchDetails(staffId as string),
+		queryFn: () => {
+			if (staffId) {
+				return fetchDetails(staffId as string);
+			} else {
+				return Promise.reject(new Error('Staff ID not provided'));
+			}
+		},
 	});
+
 	return (
 		<div className="bg-primary-50 grid grid-cols-12 p-2">
 			<div className="md:col-span-4 col-span-12">

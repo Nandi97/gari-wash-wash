@@ -11,8 +11,9 @@ export default function CreateStaff() {
 
 	const { mutate, isPending } = useMutation({
 		mutationFn: async (data: any) => {
-			const response = await axios.post('/api/staff/post', data);
-			return response.data;
+			const response1 = await axios.post('/api/staff/post', data);
+			const response2 = await axios.post('/api/user/post', data);
+			return response1.data;
 		},
 
 		onError: (error: any) => {

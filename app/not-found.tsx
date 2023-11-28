@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { headers } from 'next/headers';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
-import { metadata } from './layout';
 import { redirect } from 'next/navigation';
 
 export async function getSessionData() {
@@ -12,7 +11,6 @@ export async function getSessionData() {
 }
 
 export default async function NotFound() {
-	metadata.title = '404 - Page Not Found';
 	const session = await getSessionData();
 
 	if (!session) {

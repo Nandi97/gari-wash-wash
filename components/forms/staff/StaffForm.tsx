@@ -8,15 +8,20 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
+import { useParams } from 'next/navigation';
 
 interface Roles {
 	id: string;
 	name: string;
 }
+interface Designations {
+	id: string;
+	name: string;
+	description: string;
+}
 
 interface StaffForm {
-	firstName: string;
-	lastName: string;
+	name: string;
 	email: string;
 	image: string;
 	password: string;
@@ -28,6 +33,7 @@ interface StaffForm {
 	stateProvince: string;
 	zipPostalCode: string;
 	roleId: string;
+	designationId: string;
 	carWashId: string;
 	createdById: string;
 }
@@ -41,8 +47,14 @@ const fetchAllRoles = async () => {
 	return response.data;
 };
 
+const fetchAllDesignations = async (slug: any) => {
+	const response = await axios.get('/api/roles/get', { params: { slug: slug } });
+	return response.data;
+};
+
 export default function StaffForm({ onSubmit, initialValues, isPending }: StaffFormProps) {
 	const { data: session } = useSession();
+	const params = useParams();
 	const [selectedImage, setSelectedImage] = useState<string>('');
 	const imageRef = useRef<HTMLInputElement>(null);
 	const {
@@ -53,11 +65,21 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 	} = useForm<StaffForm>({
 		defaultValues: initialValues,
 	});
+	const carWashId = params?.['car-wash-id'];
 
 	const { data: roles } = useQuery<Roles[]>({
 		queryFn: fetchAllRoles,
 		queryKey: ['roles'],
 	});
+	const { data: designations } = useQuery<Designations[]>({
+		queryKey: ['designations', carWashId],
+		queryFn: () =>
+			axios
+				.get('/api/designation/get', { params: { slug: carWashId } })
+				.then((response) => response.data),
+	});
+
+	// console.log(designations);
 
 	const convertToBase64 = (file: File): Promise<string> => {
 		return new Promise((resolve, reject) => {
@@ -90,6 +112,8 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 
 			data.createdById = session.user.id;
 			data.carWashId = session.user.carWash.id;
+
+			// console.log(data);
 
 			onSubmit(data);
 		} catch (error) {
@@ -201,34 +225,20 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 									<div className="grid grid-cols-6 gap-6">
 										<div className="col-span-6 sm:col-span-3 space-y-1">
 											<label
-												htmlFor="firstName"
+												htmlFor="name"
 												className="block text-xs font-medium text-secondary-700 "
 											>
-												First name
+												Full Name
 											</label>
 											<input
 												type="text"
-												id="firstName"
-												{...register('firstName')}
+												id="name"
+												{...register('name')}
 												className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 											/>
 										</div>
 
 										<div className="col-span-6 sm:col-span-3 space-y-1">
-											<label
-												htmlFor="lastName"
-												className="block text-xs font-medium text-secondary-700"
-											>
-												Last name
-											</label>
-											<input
-												type="text"
-												{...register('lastName')}
-												id="lastName"
-												className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
-											/>
-										</div>
-										<div className="col-span-6 sm:col-span-2 space-y-1">
 											<label
 												htmlFor="phone-number"
 												className="block text-xs font-medium text-secondary-700"
@@ -259,14 +269,14 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 
 										<div className="col-span-6 sm:col-span-2 space-y-1">
 											<label
-												htmlFor="phone-number"
+												htmlFor="roleId"
 												className="block text-xs font-medium text-secondary-700"
 											>
 												Staff Role
 											</label>
 											<select
 												{...register('roleId', { required: true })}
-												id="phone-number"
+												id="roleId"
 												className={`${
 													errors.roleId
 														? 'bg-red-50 border-red-300'
@@ -283,6 +293,42 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 												</option>
 												{roles ? (
 													roles?.map((item) => (
+														<option key={item?.id} value={item?.id}>
+															{item?.name}
+														</option>
+													))
+												) : (
+													<></>
+												)}
+											</select>
+										</div>
+
+										<div className="col-span-6 sm:col-span-2 space-y-1">
+											<label
+												htmlFor="designationId"
+												className="block text-xs font-medium text-secondary-700"
+											>
+												Staff Designation
+											</label>
+											<select
+												{...register('designationId', { required: true })}
+												id="designationId"
+												className={`${
+													errors.designationId
+														? 'bg-red-50 border-red-300'
+														: 'bg-secondary-50 border-secondary-300'
+												} sm:text-sm w-full  bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1`}
+											>
+												<option
+													disabled
+													defaultValue=""
+													value=""
+													className="text-opacity-50 text-secondary-700"
+												>
+													--Select Role--
+												</option>
+												{designations ? (
+													designations?.map((item) => (
 														<option key={item?.id} value={item?.id}>
 															{item?.name}
 														</option>

@@ -4,6 +4,8 @@ import { getCarWashes } from './seeders/carWashes';
 import { getServices } from './seeders/services';
 import { getCarTypes } from './seeders/carTypes';
 import { getMenus } from './seeders/menus';
+import { getDesignations } from './seeders/designations';
+import { getStaff } from './seeders/staff';
 import { hash } from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -14,6 +16,8 @@ async function main() {
 	const services = getServices();
 	const carTypes = getCarTypes();
 	const menus = getMenus();
+	const designations = getDesignations();
+	const staffs = getStaff();
 
 	//Menus
 	for (const menu of menus) {
@@ -31,6 +35,16 @@ async function main() {
 		create: {
 			name: 'Super Admin',
 			description: 'Has access to all features and car washes.',
+		},
+	});
+
+	//Super Admin Role
+	const staffMemeberRole = await prisma.role.upsert({
+		where: { name: 'Super Admin' },
+		update: {},
+		create: {
+			name: 'Staff Member',
+			description: 'Works at a car wash and has limited access.',
 		},
 	});
 	//Roles
@@ -94,6 +108,31 @@ async function main() {
 		});
 	}
 
+	//Designations
+	for (const designation of designations) {
+		await prisma.designation.upsert({
+			where: { name: designation.name },
+			update: {
+				name: designation.name,
+				description: designation.description,
+				carWash: {
+					connect: {
+						id: randomCarWash.id,
+					},
+				},
+			},
+			create: {
+				name: designation.name,
+				description: designation.description,
+				carWash: {
+					connect: {
+						id: randomCarWash.id,
+					},
+				},
+			},
+		});
+	}
+
 	//Admin user
 	const password = await hash('Password1', 12);
 	const user = await prisma.user.upsert({
@@ -102,14 +141,8 @@ async function main() {
 		create: {
 			email: 'alvin@email.com',
 			image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAE3SURBVDjLY/j//z8DJZhh6BgQMuWBQumq5xdaNr/84Nt1t4FkA5LnPd4A1Kjg1XaroWH98/9keyFx1sMLKfMePcAwoLy8/EBxcfGB3NzcA2lpaQfi4+MVwsPDD/j5+R1wdXU9AFJjX3GtIWzSvQvmOZcMMAwAag4Aav6QkpLyH6h5AkgMqLkBqHmBjY2NgnXRlQCn6msLTDIuCBgmX3DQiz+rgOEFoM0OQM3/IyMj/wM1F8BsBmHv1psH0uc+/J8868H/sIl3P+AMA6CzJwQGBv53c3P7D7RZgORoBNosANLs4uLy38jIaALJBoCcDbS5wNra+r+BgcF/BQUFB6IMANkMDbACEF9TU3MC0AX/JSQkPggKChoQNABq8wGQs4GaDYA2HwBqPgDUfICLi+sACwuLweDMTAA2jKFj5WHetwAAAABJRU5ErkJggg==',
-			firstName: 'Alvin',
-			lastName: 'Alvin',
-			phoneNumber: '254712012246',
-			address: 'String?',
-			about: 'String?',
-			city: 'String?',
-			stateProvince: 'String?',
-			zipPostalCode: 'String?',
+			name: 'Alvin Kigen Maina',
+
 			role: {
 				connect: {
 					id: superAdminRole.id,
@@ -123,6 +156,95 @@ async function main() {
 			password,
 		},
 	});
+
+	const defaultDesignation = await prisma.designation.upsert({
+		where: { name: 'Car Wash Attendant' },
+		update: {},
+		create: {
+			name: 'Car Wash Attendant',
+			description:
+				'Responsible for washing and detailing vehicles, ensuring high-quality service to customers.',
+			carWash: {
+				connect: {
+					id: randomCarWash.id,
+				},
+			},
+		},
+	});
+
+	//Staff Members
+	for (const staff of staffs) {
+		await prisma.staff.upsert({
+			where: { name: staff.name, email: staff.email },
+			update: {
+				name: staff.name,
+				email: staff.email,
+				image: staff.image,
+				staffNo: staff.staffNo,
+				phoneNumber: staff.phoneNumber,
+				address: staff.address,
+				about: staff.about,
+				city: staff.city,
+				stateProvince: staff.stateProvince,
+				zipPostalCode: staff.zipPostalCode,
+			},
+			create: {
+				name: staff.name,
+				email: staff.email,
+				image: staff.image,
+				staffNo: staff.staffNo,
+				phoneNumber: staff.phoneNumber,
+				address: staff.address,
+				about: staff.about,
+				city: staff.city,
+				stateProvince: staff.stateProvince,
+				zipPostalCode: staff.zipPostalCode,
+				createdBy: {
+					connect: {
+						id: user.id,
+					},
+				},
+				carWash: {
+					connect: {
+						id: randomCarWash.id,
+					},
+				},
+				designation: {
+					connect: {
+						id: defaultDesignation.id,
+					},
+				},
+			},
+		});
+	}
+
+	//Staff Members
+	for (const staff of staffs) {
+		await prisma.user.upsert({
+			where: { name: staff.name, email: staff.email },
+			update: {
+				name: staff.name,
+				email: staff.email,
+				image: staff.image,
+			},
+			create: {
+				name: staff.name,
+				email: staff.email,
+				image: staff.image,
+				password,
+				role: {
+					connect: {
+						id: superAdminRole.id,
+					},
+				},
+				carWash: {
+					connect: {
+						id: randomCarWash.id,
+					},
+				},
+			},
+		});
+	}
 }
 main()
 	.catch((error) => {

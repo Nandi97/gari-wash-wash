@@ -1,16 +1,20 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '@/lib/prisma';
-import { getServerSession } from 'next-auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	if (req.method === 'GET') {
 		try {
-			const staffId = req.query.slug?.toString();
-			const data = await prisma.staff.findUnique({
-				where: { id: staffId },
+			const carWashId: any = req.query.slug;
+			const data = await prisma.designation.findMany({
+				where: {
+					deletedAt: null,
+					carWashId: carWashId,
+				},
 				include: {
-					designation: true,
 					carWash: true,
+				},
+				orderBy: {
+					createdAt: 'asc',
 				},
 			});
 			return res.status(200).json(data);

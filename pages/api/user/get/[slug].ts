@@ -6,11 +6,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 	if (req.method === 'GET') {
 		try {
 			const staffId = req.query.slug?.toString();
-			const data = await prisma.staff.findUnique({
+			const data = await prisma.user.findUnique({
 				where: { id: staffId },
-				include: {
-					designation: true,
-					carWash: true,
+				select: {
+					id: true,
+					firstName: true,
+					lastName: true,
+					email: true,
+					image: true,
+
+					role: {
+						select: {
+							id: true,
+							name: true,
+						},
+					},
+					carWash: {
+						select: {
+							id: true,
+							name: true,
+							path: true,
+							logo: true,
+							location: true,
+							mapsLink: true,
+						},
+					},
 				},
 			});
 			return res.status(200).json(data);

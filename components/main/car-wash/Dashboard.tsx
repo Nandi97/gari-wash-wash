@@ -22,11 +22,6 @@ export default function AdminDashboard() {
 		queryFn: fetchAllCarWashes,
 		queryKey: ['carwashes'],
 	});
-	// console.log(session?.user);
-
-	// const user = getAuthenticatedUser(session);
-
-	// console.log(user);
 
 	return (
 		<div className="grid grid-cols-12 gap-4">
@@ -34,7 +29,7 @@ export default function AdminDashboard() {
 				<CarWashCard
 					key={item?.id}
 					name={item?.name}
-					path={item?.path}
+					path={item?.id}
 					logo={item?.logo}
 					location={item?.location}
 					mapsLink={item?.mapsLink}

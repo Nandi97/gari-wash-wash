@@ -50,18 +50,11 @@ model Session {
 
 model User {
   id            String    @id @default(cuid())
-  firstName     String?
-  lastName      String?
+  name          String?
   email         String?   @unique
   emailVerified DateTime?
   image         String?
   password      String
-  phoneNumber   String?
-  address       String?
-  about         String?
-  city          String?
-  stateProvince String?
-  zipPostalCode String?
 
   createdById String?
   createdBy   User?   @relation(name: "Creator", fields: [createdById], references: [id])
@@ -77,6 +70,7 @@ model User {
 
   User    User[]    @relation("Creator")
   CarWash CarWash[] @relation("CarWashCreator")
+  staff   Staff[]   @relation("staffCreator")
 }
 
 model VerificationToken {
@@ -93,6 +87,52 @@ model Menu {
   url       String    @unique
   icon      String    @unique
   listOrder Int       @unique
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Designation {
+  id String @id @default(cuid())
+
+  name        String @unique
+  description String
+
+  carWashId String
+  carWash   CarWash @relation(fields: [carWashId], references: [id])
+
+  deletedAt DateTime?
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  Staff Staff[]
+}
+
+model Staff {
+  id            String  @id @default(cuid())
+  name          String?
+  email         String? @unique
+  image         String?
+  staffNo       String? @unique
+  phoneNumber   String?
+  address       String?
+  about         String?
+  city          String?
+  stateProvince String?
+  zipPostalCode String?
+
+  //Created By Who
+  createdById String?
+  createdBy   User?   @relation(name: "staffCreator", fields: [createdById], references: [id])
+
+  //Staffs Designation
+  designationId String
+  designation   Designation @relation(fields: [designationId], references: [id])
+
+  //Belongs to Which Car Wash
+  carWash   CarWash? @relation(fields: [carWashId], references: [id])
+  carWashId String?
+
+  deletedAt DateTime?
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
 }
@@ -149,10 +189,12 @@ model CarWash {
   createdBy   User?   @relation("CarWashCreator", fields: [createdById], references: [id])
 
   // Define a relationship to users (staff members)
-  staff           User[]           @relation("userToCarWash")
+  sysUser         User[]           @relation("userToCarWash")
+  staff           Staff[]
   carWashServices CarWashService[]
 
-  deletedAt DateTime?
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+  deletedAt   DateTime?
+  createdAt   DateTime?     @default(now())
+  updatedAt   DateTime?     @updatedAt
+  Designation Designation[]
 }
