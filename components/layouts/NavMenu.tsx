@@ -65,12 +65,12 @@ export default function NavMenu({ user }: NavMenuProps) {
 													user?.role?.name === 'Super Admin' &&
 													item?.name === 'Dashboard'
 														? item?.url
-														: `/car-wash/${user?.carWash?.path}/${item?.url}`
+														: `/car-wash/${user?.carWash?.id}/${item?.url}`
 												}
 												className={`${
 													pathname === item?.url ||
 													pathname ===
-														`/car-wash/${user?.carWash?.path}/${item?.url}`
+														`/car-wash/${user?.carWash?.id}/${item?.url}`
 														? 'bg-slate-200 '
 														: 'text-gray-900'
 												} flex items-center p-2 space-x-2 text-secondary-600 hover:bg-slate-200 rounded-md`}

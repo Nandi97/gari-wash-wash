@@ -38,27 +38,65 @@ export default function SignIn({ initialValues }: LogInFormProps) {
 
 	const { mutate, isPending } = useMutation({
 		mutationFn: async (data: any) => {
-			const response = await signIn('credentials', {
-				redirect: false,
-				email: data.email,
-				password: data.password,
-				callbackUrl: '/',
-			});
+			try {
+				const response = await signIn('credentials', {
+					redirect: false,
+					email: data.email,
+					password: data.password,
+					callbackUrl: '/',
+				});
 
-			// console.log(response);
-			return response;
+				// console.log(response);
+
+				if (response?.ok) {
+					return response;
+				} else {
+					throw response;
+				}
+			} catch (error) {
+				if (error instanceof Error) {
+					console.error('An unexpected error occurred:', error);
+					throw new Error('An unexpected error occurred');
+				}
+
+				throw error;
+			}
 		},
 
-		onError: (error: any) => {
-			if (error instanceof AxiosError) {
-				toast.error(error?.response?.data.message, {
-					id: toastId,
-				});
+		onError: (response: any) => {
+			// console.log(response);
+
+			if (response && response.status) {
+				const { status, data } = response;
+
+				if (status === 401) {
+					toast.error(data?.error || 'Invalid email or password. Please try again.', {
+						id: toastId,
+					});
+				} else if (status === 403) {
+					toast.error('You do not have permission to perform this action', {
+						id: toastId,
+					});
+				} else if (status >= 400 && status < 500) {
+					toast.error('Client error. Please check your input and try again.', {
+						id: toastId,
+					});
+				} else if (status >= 500) {
+					toast.error('Server error. Please try again later.', { id: toastId });
+				} else {
+					toast.error('An unexpected error occurred', { id: toastId });
+				}
+			} else {
+				toast.error('An unexpected error occurred', { id: toastId });
 			}
 		},
 		onSuccess: (data: any) => {
-			toast.success('Car Wash Was Successful', { id: toastId });
-			router.push(data.url);
+			if (data?.ok === true) {
+				toast.success('Car Wash Was Successful', { id: toastId });
+				router.push(data.url);
+			} else {
+				// console.log(data);
+			}
 		},
 	});
 
@@ -71,7 +109,7 @@ export default function SignIn({ initialValues }: LogInFormProps) {
 	};
 
 	if (session) {
-		router.push('/');
+		router.push('/car-wash');
 	}
 	return (
 		<div className="flex bg-primary-50 z-[3] fixed top-0 left-0 w-full h-full">

@@ -107,6 +107,33 @@ model Designation {
   Staff Staff[]
 }
 
+model Town {
+  id   String @id @default(cuid())
+  name String @unique
+
+  constituencies Constituency[]
+}
+
+model Constituency {
+  id   String @id @default(cuid())
+  name String @unique
+
+  areas Area[]
+
+  town   Town?   @relation(fields: [townId], references: [id])
+  townId String?
+}
+
+model Area {
+  id   String @id @default(cuid())
+  name String @unique
+
+  constituency   Constituency? @relation(fields: [constituencyId], references: [id])
+  constituencyId String?
+
+  carWashes CarWash[]
+}
+
 model Staff {
   id            String  @id @default(cuid())
   name          String?
@@ -196,5 +223,8 @@ model CarWash {
   deletedAt   DateTime?
   createdAt   DateTime?     @default(now())
   updatedAt   DateTime?     @updatedAt
-  Designation Designation[]
+  designation Designation[]
+
+  area   Area?   @relation(fields: [areaId], references: [id])
+  areaId String?
 }

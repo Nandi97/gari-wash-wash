@@ -6,6 +6,7 @@ import { getCarTypes } from './seeders/carTypes';
 import { getMenus } from './seeders/menus';
 import { getDesignations } from './seeders/designations';
 import { getStaff } from './seeders/staff';
+import { getTown } from './seeders/towns';
 import { hash } from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -18,6 +19,7 @@ async function main() {
 	const menus = getMenus();
 	const designations = getDesignations();
 	const staffs = getStaff();
+	const towns = getTown();
 
 	//Menus
 	for (const menu of menus) {
@@ -71,6 +73,28 @@ async function main() {
 			where: { id: carType.id },
 			update: { type: carType.type },
 			create: { type: carType.type },
+		});
+	}
+
+	// Towns Constituencies & Areas
+
+	for (const town of towns) {
+		await prisma.town.upsert({
+			where: { name: town.name },
+			update: { name: town.name },
+			create: {
+				name: town.name,
+				constituencies: {
+					create: town.constituencies.map((item) => ({
+						name: item.name,
+						areas: {
+							create: item.areas.map((item) => ({
+								name: item.name,
+							})),
+						},
+					})),
+				},
+			},
 		});
 	}
 

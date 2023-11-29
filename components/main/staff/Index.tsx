@@ -108,7 +108,7 @@ export default function IndexStaff() {
 	};
 
 	// console.log('Params:', carWashId);
-	console.log('Staff:', staff);
+	// console.log('Staff:', staff);
 	// console.log('Data:', data);
 	// console.log('Search Input:', searchParam);
 	return (

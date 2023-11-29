@@ -26,6 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					location: formData.location,
 					mapsLink: formData.mapsLink,
 					logo: formData.logo,
+					areaId: formData.areaId,
 					carWashServices: {
 						create: formData.carWashServices.map((item: CarWashService) => ({
 							serviceId: item.serviceId,

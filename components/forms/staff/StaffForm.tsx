@@ -172,7 +172,7 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 											<button
 												onClick={() => imageRef.current?.click()}
 												type="button"
-												className="ml-5 py-2 px-3   leading-4    focus:ring-offset-2 p-1 text-sm font-medium  bg-white border rounded-md shadow-sm border-secondary-300 text-secondary-700 hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-secondary-500"
+												className="ml-5 py-2 px-3   leading-4    focus:ring-offset-2 p-1 text-sm font-medium  bg-white border rounded-md shadow-sm border-secondary-300 text-secondary-700 hover:bg-white focus:outline-none focus:ring-2 focus:ring-secondary-500"
 											>
 												Change
 											</button>
@@ -189,10 +189,17 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 											<textarea
 												id="about"
 												rows={3}
-												className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+												className="sm:text-sm w-full bg-white bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 												placeholder="you@example.com"
-												{...register('about')}
+												{...register('about', { max: 300, min: 20 })}
 											/>
+											<p
+												className={`font-bold ${
+													watch('about')?.length > 300
+														? 'text-red-700'
+														: 'text-slate-600'
+												}`}
+											>{`${watch('about')?.length}/300`}</p>
 										</div>
 									</div>
 								</div>
@@ -233,8 +240,8 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 											<input
 												type="text"
 												id="name"
-												{...register('name')}
-												className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+												{...register('name', { required: true })}
+												className="sm:text-sm w-full bg-white bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 											/>
 										</div>
 
@@ -249,7 +256,7 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 												type="text"
 												{...register('phoneNumber')}
 												id="phone-number"
-												className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+												className="sm:text-sm w-full bg-white bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 											/>
 										</div>
 										<div className="col-span-6 sm:col-span-2 space-y-1">
@@ -262,8 +269,12 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 											<input
 												type="text"
 												id="email"
-												className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
-												{...register('email')}
+												className="sm:text-sm w-full bg-white bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+												{...register('email', {
+													pattern:
+														/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+													required: true,
+												})}
 											/>
 										</div>
 
@@ -280,8 +291,8 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 												className={`${
 													errors.roleId
 														? 'bg-red-50 border-red-300'
-														: 'bg-secondary-50 border-secondary-300'
-												} sm:text-sm w-full  bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1`}
+														: 'bg-white border-secondary-300'
+												} sm:text-sm w-full  bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1`}
 											>
 												<option
 													disabled
@@ -316,8 +327,8 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 												className={`${
 													errors.designationId
 														? 'bg-red-50 border-red-300'
-														: 'bg-secondary-50 border-secondary-300'
-												} sm:text-sm w-full  bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1`}
+														: 'bg-white border-secondary-300'
+												} sm:text-sm w-full  bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1`}
 											>
 												<option
 													disabled
@@ -347,9 +358,9 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 											</label>
 											<input
 												type="text"
-												{...register('address')}
+												{...register('address', { required: true })}
 												id="address"
-												className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+												className="sm:text-sm w-full bg-white bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 											/>
 										</div>
 
@@ -362,9 +373,9 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 											</label>
 											<input
 												type="text"
-												{...register('city')}
+												{...register('city', { required: true })}
 												id="city"
-												className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+												className="sm:text-sm w-full bg-white bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 											/>
 										</div>
 
@@ -377,9 +388,13 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 											</label>
 											<input
 												type="text"
-												{...register('stateProvince')}
+												{...register('stateProvince', { required: true })}
 												id="stateProvince"
-												className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+												className={`sm:text-sm w-full bg-white bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border ${
+													errors.stateProvince
+														? 'border-red-500'
+														: 'border-secondary-300'
+												} text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1`}
 											/>
 										</div>
 
@@ -392,13 +407,13 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 											</label>
 											<input
 												type="text"
-												{...register('zipPostalCode')}
+												{...register('zipPostalCode', { required: true })}
 												id="zipPostalCode"
-												className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+												className="sm:text-sm w-full bg-white bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 											/>
 										</div>
 
-										<div className="col-span-6 md:col-span-3   space-y-1">
+										<div className="col-span-6 md:col-span-3 space-y-1">
 											<label
 												htmlFor="password"
 												className="block text-xs font-medium text-secondary-700"
@@ -408,14 +423,38 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 											<input
 												type="password"
 												{...register('password', {
-													required: true,
+													required: 'Password is required',
+													minLength: {
+														value: 8,
+														message:
+															'Password must be at least 8 characters long',
+													},
+													maxLength: {
+														value: 20,
+														message:
+															'Password must be at most 20 characters long',
+													},
+													pattern: {
+														value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+														message:
+															'Password must contain at least one lowercase letter, one uppercase letter, and one number',
+													},
 												})}
 												id="password"
-												className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+												className={`sm:text-sm w-full bg-white bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border ${
+													errors.password
+														? 'border-red-500'
+														: 'border-secondary-300'
+												} text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1`}
 											/>
+											{errors.password && (
+												<p className="text-red-500 text-xs mt-1">
+													{errors.password.message}
+												</p>
+											)}
 										</div>
 
-										<div className="col-span-6 md:col-span-3   space-y-1">
+										<div className="col-span-6 md:col-span-3 space-y-1">
 											<label
 												htmlFor="cPassword"
 												className="block text-xs font-medium text-secondary-700"
@@ -425,16 +464,25 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 											<input
 												type="password"
 												{...register('cPassword', {
-													required: true,
+													required: 'Confirm Password is required',
 													validate: (val: string) => {
-														if (watch('password') != val) {
-															return 'Your passwords do no match';
+														if (watch('password') !== val) {
+															return 'Your passwords do not match';
 														}
 													},
 												})}
 												id="cPassword"
-												className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+												className={`sm:text-sm w-full bg-white bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border ${
+													errors.cPassword
+														? 'border-red-500'
+														: 'border-secondary-300'
+												} text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1`}
 											/>
+											{errors.cPassword && (
+												<p className="text-red-500 text-xs mt-1">
+													{errors.cPassword.message}
+												</p>
+											)}
 										</div>
 									</div>
 								</div>

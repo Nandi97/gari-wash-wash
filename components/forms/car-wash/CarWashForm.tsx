@@ -12,6 +12,9 @@ import Image from 'next/image';
 import logo_placeholder from '@/public/assets/images/logo-placeholder-image.png';
 import CarWashServiceForm from './CarWashServices';
 import { Icon } from '@iconify/react/dist/iconify.js';
+import axios from 'axios';
+import { useQuery } from '@tanstack/react-query';
+import { Item } from '@radix-ui/react-accordion';
 
 interface CarWashForm {
 	name: string;
@@ -27,14 +30,37 @@ interface CarWashForm {
 			carTypeId: string;
 		},
 	];
+	areaId: string;
 }
 interface CarWashFormProps {
 	onSubmit: SubmitHandler<CarWashForm>;
 	initialValues?: CarWashForm;
 	isPending: boolean;
 }
+
+interface Town {
+	id: string;
+	name: string;
+	constituencies: {
+		id: string;
+		name: string;
+		townId: string;
+		areas: {
+			id: string;
+			name: string;
+			constituencyId: string;
+		}[];
+	}[];
+}
+
+const fetchAllTowns = async () => {
+	const response = await axios.get('/api/town/get');
+	return response.data as Array<Town>;
+};
 export default function CarWashForm({ onSubmit, initialValues, isPending }: CarWashFormProps) {
 	const [accValue, setAccValue] = useState('one');
+	const [selectedTown, setSelectedTown] = useState<any>();
+	const [selectedConstituency, setSelectedConstituency] = useState<any>();
 	const [selectedLogo, setSelectedLogo] = useState<string>('');
 	const logoRef = useRef<HTMLInputElement>(null);
 	const [carWashServices, setCarWashServices] = useState<any>([
@@ -44,6 +70,30 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 			carTypeId: '',
 		},
 	]);
+
+	const { data: towns } = useQuery({
+		queryFn: fetchAllTowns,
+		queryKey: ['towns'],
+	});
+
+	const constituencies = towns
+		?.filter((town) =>
+			town.constituencies.some((constituency) => constituency.townId === selectedTown)
+		)
+		.map((town) => town.constituencies)
+		.flat();
+
+	const areas = constituencies
+		?.filter((constituency) =>
+			constituency.areas.some((area) => area.constituencyId === selectedConstituency)
+		)
+		.map((constituency) => constituency.areas)
+		.flat();
+
+	// console.log('Towns:', selectedTown);
+	// console.log('Towns:', selectedConstituency);
+	// console.log('Towns:', constituencies);
+	// console.log('Towns:', areas);
 
 	const {
 		register,
@@ -206,7 +256,8 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 											id="path"
 											{...register('path', {
 												required: true,
-												pattern: /^[a-zA-Z]{3}-[a-zA-Z]{3}(-[a-zA-Z]{3})?$/,
+												pattern:
+													/^[a-zA-Z]{10}-[a-zA-Z]{10}(-[a-zA-Z]{10})?$/,
 											})}
 											className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 										/>
@@ -236,7 +287,7 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 											htmlFor="location"
 											className="block text-xs font-medium text-secondary-700"
 										>
-											Location <sup className="text-red-500">*</sup>
+											Landmark <sup className="text-red-500">*</sup>
 										</label>
 										<input
 											type="text"
@@ -245,6 +296,100 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 											className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 										/>
 									</div>
+
+									<div className="md:col-span-4 col-span-12 space-y-1">
+										<label
+											htmlFor="town"
+											className="block text-sm font-medium text-secondary-700"
+										>
+											Town <sup className="text-red-500">*</sup>
+										</label>
+										<select
+											id="town"
+											name="town"
+											value={selectedTown}
+											onChange={(e) => setSelectedTown(e.target.value)}
+											className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+											required
+										>
+											<option
+												selected
+												disabled
+												value=""
+												className="text-opacity-50 text-secondary-700"
+											>
+												--Select Town--
+											</option>
+											{towns?.map((item) => (
+												<option key={item?.id} value={item?.id}>
+													{item?.name}
+												</option>
+											))}
+										</select>
+									</div>
+									<div className="md:col-span-4 col-span-12 space-y-1">
+										<label
+											htmlFor="constituency"
+											className="block text-sm font-medium text-secondary-700"
+										>
+											Constituency <sup className="text-red-500">*</sup>
+										</label>
+										<select
+											id="constituency"
+											name="constituency"
+											value={selectedConstituency}
+											onChange={(e) =>
+												setSelectedConstituency(e.target.value)
+											}
+											className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+											required
+											disabled={selectedTown ? false : true}
+										>
+											<option
+												selected
+												disabled
+												value=""
+												className="text-opacity-50 text-secondary-700"
+											>
+												--Select Constituency--
+											</option>
+											{constituencies?.map((item) => (
+												<option key={item?.id} value={item?.id}>
+													{item?.name}
+												</option>
+											))}
+										</select>
+									</div>
+									<div className="md:col-span-4 col-span-12 space-y-1">
+										<label
+											htmlFor="areaId"
+											className="block text-sm font-medium text-secondary-700"
+										>
+											Area
+										</label>
+										<select
+											id="areaId"
+											{...register('areaId', { required: true })}
+											className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+											required
+											disabled={selectedConstituency ? false : true}
+										>
+											<option
+												selected
+												disabled
+												value=""
+												className="text-opacity-50 text-secondary-700"
+											>
+												--Select Area--
+											</option>
+											{areas?.map((item) => (
+												<option key={item?.id} value={item?.id}>
+													{item?.name}
+												</option>
+											))}
+										</select>
+									</div>
+
 									<div className="col-span-6 space-y-1">
 										<label
 											htmlFor="mapsLink"

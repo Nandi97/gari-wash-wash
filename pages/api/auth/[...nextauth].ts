@@ -11,7 +11,7 @@ export const authOptions: NextAuthOptions = {
 		strategy: 'jwt',
 	},
 	adapter: adapter,
-	secret: process.env.NEXTAUTH_SECRET,
+
 	providers: [
 		CredentialsProvider({
 			name: 'Sign in',
@@ -24,46 +24,56 @@ export const authOptions: NextAuthOptions = {
 				password: { label: 'Password', type: 'password' },
 			},
 			async authorize(credentials) {
-				if (!credentials?.email || !credentials?.password) {
-					throw new Error('Missing username or password');
-				}
-				const user = await prisma.user.findUnique({
-					where: {
-						email: credentials?.email,
-					},
-					include: {
-						role: true,
-						carWash: true,
-					},
-				});
-				// if user doesn't exist or password doesn't match
-				if (!user || !(await compare(credentials?.password, user.password))) {
-					throw new Error('Invalid username or password');
-				}
-
 				function generate32BitKey() {
-					// Generate a random 32-bit integer
 					const key = Math.floor(Math.random() * 2 ** 32);
-
-					// Convert the integer to a hexadecimal string
 					const hexKey = key.toString(16).toUpperCase();
-
-					// Pad the string with zeros if needed to ensure it's 8 characters long
 					return hexKey.padStart(8, '0');
 				}
 
-				// Example usage
-				const generatedKey = generate32BitKey();
-				// console.log('User:', user);
-				return {
-					id: user.id + '',
-					email: user.email,
-					image: user.image,
-					name: user.name,
-					randomKey: generatedKey,
-					role: user.role,
-					carWash: user.carWash,
-				};
+				try {
+					if (!credentials?.email || !credentials?.password) {
+						throw new Error('Missing username or password');
+					}
+
+					const user = await prisma.user.findUnique({
+						where: {
+							email: credentials?.email,
+						},
+						include: {
+							role: true,
+							carWash: true,
+						},
+					});
+
+					if (!user || !(await compare(credentials?.password, user.password))) {
+						throw new Error('Invalid email or password');
+					}
+
+					// Example usage
+					const generatedKey = generate32BitKey();
+
+					return {
+						id: user.id + '',
+						email: user.email,
+						image: user.image,
+						name: user.name,
+						randomKey: generatedKey,
+						role: user.role,
+						carWash: user.carWash,
+					};
+				} catch (error: any) {
+					// Log the detailed error for debugging purposes
+					console.error('Authentication error:', error);
+
+					// Rethrow the original error or throw a custom error message
+					if (error.message === 'Missing username or password') {
+						throw new Error('Please provide both username and password');
+					} else if (error.message === 'Invalid email or password') {
+						throw new Error('Invalid email or password. Please try again.');
+					} else {
+						throw new Error('An unexpected error occurred during authentication');
+					}
+				}
 			},
 		}),
 	],
@@ -98,6 +108,7 @@ export const authOptions: NextAuthOptions = {
 			return token;
 		},
 	},
+	secret: process.env.NEXTAUTH_SECRET,
 };
 
 export default NextAuth(authOptions);
