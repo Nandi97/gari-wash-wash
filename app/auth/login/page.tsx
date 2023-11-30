@@ -113,7 +113,7 @@ export default function SignIn({ initialValues }: LogInFormProps) {
 	}
 	return (
 		<div className="flex bg-primary-50 z-[3] fixed top-0 left-0 w-full h-full">
-			<div className="z-[3] m-auto bg-slate-50 rounded-md w-3/5 h-3/4 grid lg:grid-cols-2 ">
+			<div className="z-[3] m-auto bg-slate-50 rounded-md md:w-3/5 w-4/5 h-3/4 grid lg:grid-cols-2 ">
 				<div className="flex w-full h-full flex-col bg-gradient-to-r from-blue-500 to-indigo-500 rounded-l-md z-[3] ">
 					<div className="flex flex-col mt-5 px-5 space-y-4">
 						<div className="flex items-center space-x-3">
@@ -121,7 +121,9 @@ export default function SignIn({ initialValues }: LogInFormProps) {
 							<span className="text-primary-50">Gari Wash Wash</span>
 						</div>
 						<h2 className="text-2xl font-semibold text-primary-50">Welcome to</h2>
-						<h1 className="text-5xl text-primary-50 font-extrabold">Gari Wash Wash</h1>
+						<h1 className="md:text-5xl text-2xl text-primary-50 font-extrabold">
+							Gari Wash Wash
+						</h1>
 					</div>
 					<div className="relative w-full h-full overflow-hidden">
 						<div className={styles.cartoonImg}></div>
@@ -129,8 +131,8 @@ export default function SignIn({ initialValues }: LogInFormProps) {
 						<div className={styles.cloud_two}></div>
 					</div>
 				</div>
-				<div className="z-[3] right flex flex-col justify-evenly bg-gray-50 px-8 items-center">
-					<form onSubmit={handleSubmit(handleSubmitForm)} className="w-1/2">
+				<div className="z-[3] right flex flex-col justify-evenly bg-gray-50 md:px-8 px-2 items-center">
+					<form onSubmit={handleSubmit(handleSubmitForm)} className="md:w-1/2 w-full">
 						<div className="mb-6">
 							<label
 								htmlFor="email_field"
