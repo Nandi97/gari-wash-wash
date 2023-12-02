@@ -9,6 +9,7 @@ import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
+import { UploadButton } from '@/lib/uploadthing';
 
 interface Roles {
 	id: string;
@@ -81,23 +82,23 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 
 	// console.log(designations);
 
-	const convertToBase64 = (file: File): Promise<string> => {
-		return new Promise((resolve, reject) => {
-			const reader = new FileReader();
-			reader.readAsDataURL(file);
-			reader.onload = () => resolve(reader.result as string);
-			reader.onerror = (error) => reject(error);
-		});
-	};
+	// const convertToBase64 = (file: File): Promise<string> => {
+	// 	return new Promise((resolve, reject) => {
+	// 		const reader = new FileReader();
+	// 		reader.readAsDataURL(file);
+	// 		reader.onload = () => resolve(reader.result as string);
+	// 		reader.onerror = (error) => reject(error);
+	// 	});
+	// };
 
-	const staffImageSelected = async (event: React.ChangeEvent<HTMLInputElement>) => {
-		const files = event?.target?.files;
-		if (files && files.length > 0) {
-			const file = files[0];
-			const base64Image = await convertToBase64(file);
-			setSelectedImage(base64Image);
-		}
-	};
+	// const staffImageSelected = async (event: React.ChangeEvent<HTMLInputElement>) => {
+	// 	const files = event?.target?.files;
+	// 	if (files && files.length > 0) {
+	// 		const file = files[0];
+	// 		const base64Image = await convertToBase64(file);
+	// 		setSelectedImage(base64Image);
+	// 	}
+	// };
 	const handleSubmitForm: SubmitHandler<StaffForm> = (data) => {
 		try {
 			if (selectedImage) {
@@ -159,7 +160,7 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 												alt="Staff Avatar Image"
 												className="items-center justify-center overflow-hidden rounded-md md:w-24 sm:h-10 md:h-24 sm:w-10 ring-2 ring-offset-1 ring-primary-600 bg-secondary-300 inline-block"
 											/>
-											<input
+											{/* <input
 												type="file"
 												name="image"
 												id="image"
@@ -175,7 +176,25 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 												className="ml-5 py-2 px-3   leading-4    focus:ring-offset-2 p-1 text-sm font-medium  bg-white border rounded-md shadow-sm border-secondary-300 text-secondary-700 hover:bg-white focus:outline-none focus:ring-2 focus:ring-secondary-500"
 											>
 												Change
-											</button>
+											</button> */}
+											<div className="px-5">
+												<UploadButton
+													endpoint="strictImageAttachment"
+													onClientUploadComplete={(res) => {
+														if (res) {
+															// console.log('Files: ', res[0].url);
+															setSelectedImage(res[0].url);
+														}
+
+														// alert('Upload Completed');
+													}}
+													onUploadError={(error: Error) => {
+														// Do something with the error.
+														console.log(JSON.stringify(error));
+														alert(`ERROR! ${error.message}`);
+													}}
+												/>
+											</div>
 										</div>
 									</div>
 									<div className="flex flex-col w-full space-y-2">

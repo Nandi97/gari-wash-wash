@@ -10,6 +10,7 @@ const nextConfig = {
 			'www.oraro.co.ke',
 			'tailwindui.com',
 			'images.unsplash.com',
+			'utfs.io',
 		],
 	},
 	typescript: {
