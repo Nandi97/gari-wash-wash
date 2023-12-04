@@ -159,7 +159,7 @@ export default function IndexTable({ data, pathname, isPending }: IndexTableProp
 													optBtn={tableOptBtnTxt}
 													optionsList={[
 														{
-															action: () => editStaffMember(item?.id),
+															link: `${pathname}/${item.id}/edit`,
 															name: 'Edit Staff',
 															icon: 'heroicons:pencil-square',
 														},

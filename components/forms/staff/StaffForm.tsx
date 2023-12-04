@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import usr_avatar from '@/public/assets/images/user-avatar.webp';
 import { registerStaffValidate } from '@/lib/validate';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -10,6 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
 import { UploadButton } from '@/lib/uploadthing';
+import { Switch } from '@headlessui/react';
 
 interface Roles {
 	id: string;
@@ -25,8 +26,8 @@ interface StaffForm {
 	name: string;
 	email: string;
 	image: string;
-	password: string;
-	cPassword: string;
+	password?: string;
+	cPassword?: string;
 	phoneNumber: string;
 	address: string;
 	about: string;
@@ -48,16 +49,10 @@ const fetchAllRoles = async () => {
 	return response.data;
 };
 
-const fetchAllDesignations = async (slug: any) => {
-	const response = await axios.get('/api/roles/get', { params: { slug: slug } });
-	return response.data;
-};
-
 export default function StaffForm({ onSubmit, initialValues, isPending }: StaffFormProps) {
 	const { data: session } = useSession();
 	const params = useParams();
 	const [selectedImage, setSelectedImage] = useState<string>('');
-	const imageRef = useRef<HTMLInputElement>(null);
 	const {
 		register,
 		watch,
@@ -67,6 +62,8 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 		defaultValues: initialValues,
 	});
 	const carWashId = params?.['car-wash-id'];
+	const [togglePassword, setTogglePassword] = useState(true);
+	// const [enabled, setEnabled] = useState(false);
 
 	const { data: roles } = useQuery<Roles[]>({
 		queryFn: fetchAllRoles,
@@ -80,32 +77,18 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 				.then((response) => response.data),
 	});
 
-	// console.log(designations);
+	// console.log(initialValues);
+	useEffect(() => {
+		if (initialValues === undefined) {
+			setTogglePassword(true);
+		} else {
+			setTogglePassword(false);
+		}
+	}, [initialValues]);
 
-	// const convertToBase64 = (file: File): Promise<string> => {
-	// 	return new Promise((resolve, reject) => {
-	// 		const reader = new FileReader();
-	// 		reader.readAsDataURL(file);
-	// 		reader.onload = () => resolve(reader.result as string);
-	// 		reader.onerror = (error) => reject(error);
-	// 	});
-	// };
-
-	// const staffImageSelected = async (event: React.ChangeEvent<HTMLInputElement>) => {
-	// 	const files = event?.target?.files;
-	// 	if (files && files.length > 0) {
-	// 		const file = files[0];
-	// 		const base64Image = await convertToBase64(file);
-	// 		setSelectedImage(base64Image);
-	// 	}
-	// };
 	const handleSubmitForm: SubmitHandler<StaffForm> = (data) => {
 		try {
-			if (selectedImage) {
-				data.image = selectedImage;
-			} else {
-				data.image = '';
-			}
+			data.image = selectedImage || (initialValues && initialValues.image) || '';
 
 			if (!session || !session.user) {
 				throw new Error('Session user ID is missing. Cannot submit the form.');
@@ -156,40 +139,24 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 											<Image
 												height={512}
 												width={512}
-												src={selectedImage || usr_avatar}
+												src={
+													selectedImage ||
+													initialValues?.image ||
+													usr_avatar
+												}
 												alt="Staff Avatar Image"
 												className="items-center justify-center overflow-hidden rounded-md md:w-24 sm:h-10 md:h-24 sm:w-10 ring-2 ring-offset-1 ring-primary-600 bg-secondary-300 inline-block"
 											/>
-											{/* <input
-												type="file"
-												name="image"
-												id="image"
-												ref={imageRef}
-												accept="image/*"
-												placeholder="Staff Avatar"
-												className="hidden"
-												onChange={staffImageSelected}
-											/>
-											<button
-												onClick={() => imageRef.current?.click()}
-												type="button"
-												className="ml-5 py-2 px-3   leading-4    focus:ring-offset-2 p-1 text-sm font-medium  bg-white border rounded-md shadow-sm border-secondary-300 text-secondary-700 hover:bg-white focus:outline-none focus:ring-2 focus:ring-secondary-500"
-											>
-												Change
-											</button> */}
+
 											<div className="px-5">
 												<UploadButton
 													endpoint="strictImageAttachment"
 													onClientUploadComplete={(res) => {
 														if (res) {
-															// console.log('Files: ', res[0].url);
 															setSelectedImage(res[0].url);
 														}
-
-														// alert('Upload Completed');
 													}}
 													onUploadError={(error: Error) => {
-														// Do something with the error.
 														console.log(JSON.stringify(error));
 														alert(`ERROR! ${error.message}`);
 													}}
@@ -431,7 +398,36 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 												className="sm:text-sm w-full bg-white bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 											/>
 										</div>
-
+										{initialValues !== undefined && (
+											<div className="col-span-6 space-y-1 w-full">
+												<div className="flex flex-col space-y-2">
+													<p className="text-xs">
+														Do you want to edit this users password?
+													</p>
+													<Switch
+														checked={togglePassword}
+														onChange={setTogglePassword}
+														className={`${
+															togglePassword
+																? 'bg-secondary-900'
+																: 'bg-secondary-700'
+														}
+          relative inline-flex h-[28px] w-[50px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white/75`}
+													>
+														<span className="sr-only">Use setting</span>
+														<span
+															aria-hidden="true"
+															className={`${
+																togglePassword
+																	? 'translate-x-[22px]'
+																	: 'translate-x-0'
+															}
+            pointer-events-none inline-block h-[24px] w-[24px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
+														/>
+													</Switch>
+												</div>
+											</div>
+										)}
 										<div className="col-span-6 md:col-span-3 space-y-1">
 											<label
 												htmlFor="password"
@@ -442,7 +438,7 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 											<input
 												type="password"
 												{...register('password', {
-													required: 'Password is required',
+													required: togglePassword,
 													minLength: {
 														value: 8,
 														message:
@@ -459,6 +455,7 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 															'Password must contain at least one lowercase letter, one uppercase letter, and one number',
 													},
 												})}
+												disabled={togglePassword === false ? true : false}
 												id="password"
 												className={`sm:text-sm w-full bg-white bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border ${
 													errors.password
@@ -483,14 +480,15 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 											<input
 												type="password"
 												{...register('cPassword', {
-													required: 'Confirm Password is required',
-													validate: (val: string) => {
+													required: togglePassword,
+													validate: (val?: string) => {
 														if (watch('password') !== val) {
 															return 'Your passwords do not match';
 														}
 													},
 												})}
 												id="cPassword"
+												disabled={togglePassword === false ? true : false}
 												className={`sm:text-sm w-full bg-white bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border ${
 													errors.cPassword
 														? 'border-red-500'

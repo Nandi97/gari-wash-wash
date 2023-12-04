@@ -14,7 +14,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					path: true,
 					logo: true,
 					location: true,
-					mapsLink: true,
+					lat: true,
+					long: true,
 					branch: true,
 					carWashServices: {
 						select: {

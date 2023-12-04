@@ -209,7 +209,8 @@ model CarWash {
   path     String  @unique
   logo     String
   location String
-  mapsLink String? // Add the mapsLink field to store the link for directions
+  lat      Float?
+  long     Float?
   branch   String?
 
   createdById String?

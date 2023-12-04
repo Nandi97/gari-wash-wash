@@ -13,15 +13,15 @@ export async function getSessionData() {
 
 export default async function Home() {
 	metadata.title = 'Super Admin Dashboard';
-	const session = await getSessionData();
+	// const session = await getSessionData();
 
-	if (!session) {
-		return redirect('/auth/login');
-	}
+	// if (!session) {
+	// 	return redirect('/auth/login');
+	// }
 
-	if (session?.user?.role?.name !== 'Super Admin') {
-		return redirect(`/car-wash/${session?.user?.carWash?.path}`);
-	}
+	// if (session?.user?.role?.name !== 'Super Admin') {
+	// 	return redirect(`/car-wash/${session?.user?.carWash?.path}`);
+	// }
 	return (
 		<div>
 			<AdminDashboard />

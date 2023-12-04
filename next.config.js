@@ -11,6 +11,7 @@ const nextConfig = {
 			'tailwindui.com',
 			'images.unsplash.com',
 			'utfs.io',
+			'picsum.photos',
 		],
 	},
 	typescript: {

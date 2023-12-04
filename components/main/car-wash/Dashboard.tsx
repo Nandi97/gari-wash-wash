@@ -10,7 +10,8 @@ interface CarWashes {
 	path: string;
 	logo: string;
 	location: string;
-	mapsLink: string;
+	lat: number;
+	long: number;
 }
 
 const fetchAllCarWashes = async () => {
@@ -32,7 +33,8 @@ export default function AdminDashboard() {
 					path={item?.id}
 					logo={item?.logo}
 					location={item?.location}
-					mapsLink={item?.mapsLink}
+					lat={item?.lat}
+					long={item?.long}
 				/>
 			))}{' '}
 		</div>

@@ -5,7 +5,7 @@ import axios from 'axios';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 
-//Fetch All posts
+//Fetch A Staff
 const fetchDetails = async (slug: string) => {
 	const response = await axios.get(`/api/staff/get/${slug}`);
 	return response.data;

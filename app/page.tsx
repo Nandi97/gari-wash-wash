@@ -16,13 +16,13 @@ export default async function Home() {
 	const session = await getSessionData();
 
 	if (!session) {
-		return redirect('/auth/login');
+		return redirect('/booking');
 	}
 
-	// console.log(session);
+	// // console.log(session);
 
-	if (session?.user?.role?.name !== 'Super Admin') {
-		return redirect(`/car-wash/${session?.user?.carWash?.path}`);
-	}
+	// if (session?.user?.role?.name !== 'Super Admin') {
+	// 	return redirect(`/car-wash/${session?.user?.carWash?.path}`);
+	// }
 	return <div>Main Dashboard</div>;
 }

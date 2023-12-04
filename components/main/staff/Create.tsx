@@ -32,14 +32,14 @@ export default function CreateStaff() {
 		},
 	});
 
-	const handleStaff = (data: any) => {
+	const handleCreateStaff = (data: any) => {
 		// console.log('Data:', data);
 		mutate(data);
 	};
 
 	return (
 		<div>
-			<StaffForm onSubmit={handleStaff} isPending={isPending} />
+			<StaffForm onSubmit={handleCreateStaff} isPending={isPending} />
 		</div>
 	);
 }
