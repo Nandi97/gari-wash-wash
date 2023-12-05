@@ -111,11 +111,12 @@ async function main() {
 		update: {},
 		create: {
 			name: 'Weissnat, Fay and Nolan',
-			location: '8129 Longview Drive',
+			landmark: '8129 Longview Drive',
 			lat: -1.318362,
 			long: 36.787535,
 			logo: `https://picsum.photos/id/${randomNum}/300/300`,
 			path: 'weissnat-fay-nolan',
+			bookingLeadTime: 1,
 		},
 	});
 
@@ -125,19 +126,21 @@ async function main() {
 			where: { name: carWash.name, path: carWash.path },
 			update: {
 				name: carWash.name,
-				location: carWash.location,
+				landmark: carWash.location,
 				lat: carWash.lat,
 				long: carWash.long,
 				logo: carWash.logo,
 				path: carWash.path,
+				bookingLeadTime: 1,
 			},
 			create: {
 				name: carWash.name,
-				location: carWash.location,
+				landmark: carWash.location,
 				lat: carWash.lat,
 				long: carWash.long,
 				logo: carWash.logo,
 				path: carWash.path,
+				bookingLeadTime: 1,
 			},
 		});
 	}

@@ -185,6 +185,7 @@ model CarType {
   updatedAt DateTime? @updatedAt
 
   CarWashService CarWashService[]
+  Booking        Booking[]
 }
 
 model CarWashService {
@@ -197,21 +198,26 @@ model CarWashService {
   status    Boolean @default(true)
   carTypeId String
   carType   CarType @relation(fields: [carTypeId], references: [id])
+  duration  Float?
 
-  deletedAt DateTime?
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+  bookingAvailability Int @default(0)
+
+  deletedAt      DateTime?
+  createdAt      DateTime?        @default(now())
+  updatedAt      DateTime?        @updatedAt
+  BookingService BookingService[]
 }
 
 model CarWash {
-  id       String  @id @default(cuid())
-  name     String  @unique
-  path     String  @unique
-  logo     String
-  location String
-  lat      Float?
-  long     Float?
-  branch   String?
+  id              String  @id @default(cuid())
+  name            String  @unique
+  path            String  @unique
+  logo            String
+  landmark        String?
+  lat             Float?
+  long            Float?
+  branch          String? @default("main")
+  bookingLeadTime Float?
 
   createdById String?
   createdBy   User?   @relation("CarWashCreator", fields: [createdById], references: [id])
@@ -226,6 +232,53 @@ model CarWash {
   updatedAt   DateTime?     @updatedAt
   designation Designation[]
 
-  area   Area?   @relation(fields: [areaId], references: [id])
-  areaId String?
+  area    Area?     @relation(fields: [areaId], references: [id])
+  areaId  String?
+  Booking Booking[]
+}
+
+model BookingService {
+  id        String         @id @default(cuid())
+  booking   Booking        @relation(fields: [bookingId], references: [id])
+  bookingId String
+  service   CarWashService @relation(fields: [serviceId], references: [id])
+  serviceId String
+  quantity  Int            @default(1)
+
+  deletedAt DateTime?
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Booking {
+  id            String   @id @default(cuid())
+  customer      Customer @relation(fields: [customerId], references: [id])
+  customerId    String
+  carWash       CarWash  @relation(fields: [carWashId], references: [id])
+  carWashId     String
+  carType       CarType  @relation(fields: [carTypeId], references: [id])
+  carTypeId     String
+  bookingDate   DateTime // Date and time of the booking
+  status        Int      @default(0) // Status of the booking (e.g., scheduled, completed)
+  totalCost     Float? // Total cost of the booking
+  paymentStatus Int      @default(0) // Payment status (e.g., paid, pending)
+
+  deletedAt DateTime?
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  bookingService BookingService[]
+}
+
+model Customer {
+  id   String @id @default(cuid())
+  name String
+
+  email       String    @unique
+  phoneNumber String    @unique
+  bookings    Booking[]
+
+  deletedAt DateTime?
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }

@@ -1,3 +1,5 @@
+import Dashboard from '@/components/main/booking/Dashboard';
+
 export default function Index() {
-	return 'Booking Index';
+	return <Dashboard />;
 }

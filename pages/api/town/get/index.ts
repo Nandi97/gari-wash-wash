@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			});
 			return res.status(200).json(data);
 		} catch (err) {
-			res.status(403).json({ err: 'Error has occurred while fetching Car Wash List' });
+			res.status(403).json({ err: 'Error has occurred while fetching town List' });
 		}
 	}
 }

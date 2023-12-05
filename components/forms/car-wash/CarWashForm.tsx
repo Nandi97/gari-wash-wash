@@ -15,6 +15,7 @@ import { Icon } from '@iconify/react/dist/iconify.js';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { Item } from '@radix-ui/react-accordion';
+import { Town } from '@/lib/types/town';
 
 interface CarWashForm {
 	name: string;
@@ -36,21 +37,6 @@ interface CarWashFormProps {
 	onSubmit: SubmitHandler<CarWashForm>;
 	initialValues?: CarWashForm;
 	isPending: boolean;
-}
-
-interface Town {
-	id: string;
-	name: string;
-	constituencies: {
-		id: string;
-		name: string;
-		townId: string;
-		areas: {
-			id: string;
-			name: string;
-			constituencyId: string;
-		}[];
-	}[];
 }
 
 const fetchAllTowns = async () => {

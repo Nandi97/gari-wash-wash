@@ -33,6 +33,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 							},
 						},
 					},
+					areaId: true,
+					area: {
+						select: {
+							id: true,
+							name: true,
+							constituencyId: true,
+							constituency: {
+								select: {
+									id: true,
+									name: true,
+									townId: true,
+									town: {
+										select: {
+											id: true,
+											name: true,
+										},
+									},
+								},
+							},
+						},
+					},
 				},
 			});
 			return res.status(200).json(data);
