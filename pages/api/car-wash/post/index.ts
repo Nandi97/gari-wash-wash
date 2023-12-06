@@ -5,7 +5,26 @@ import { getServerSession } from 'next-auth';
 interface CarWashService {
 	serviceId: string;
 	cost: string;
-	carTypeId: string;
+	carTypes: any[];
+}
+
+interface FormData {
+	name: string;
+	path: string;
+	branch: string;
+	landmark: string;
+	lat: number;
+	long: number;
+	logo: string;
+	areaId: string;
+	bookingLeadTime: number;
+	carWashServices: {
+		serviceId: string;
+		cost: number;
+		carTypes: {
+			id: string;
+		}[];
+	}[];
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -13,25 +32,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		// const session = await getServerSession();
 
 		try {
-			const formData = req.body;
-
-			// console.log(session);
-			// console.log(session);
+			const formData: FormData = req.body;
 
 			const result = await prisma.carWash.create({
 				data: {
 					name: formData.name,
 					path: formData.path,
 					branch: formData.branch,
-					location: formData.location,
-					mapsLink: formData.mapsLink,
+					landmark: formData.landmark,
+					lat: formData.lat,
+					long: formData.long,
 					logo: formData.logo,
 					areaId: formData.areaId,
+					bookingLeadTime: 1,
 					carWashServices: {
-						create: formData.carWashServices.map((item: CarWashService) => ({
+						create: formData.carWashServices.map((item) => ({
 							serviceId: item.serviceId,
-							cost: parseInt(item.cost),
-							carTypeId: item.carTypeId,
+							cost: item.cost,
+							carTypes: {
+								connect: item.carTypes.map((type: any) => ({
+									id: type.id,
+								})),
+							},
 						})),
 					},
 				},

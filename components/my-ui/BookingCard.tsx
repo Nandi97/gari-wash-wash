@@ -8,7 +8,7 @@ type BookingCardProps = {
 	name: string;
 	path: string;
 	logo: string;
-	location: string;
+	landmark: string;
 	lat: number;
 	long: number;
 	town: string;
@@ -20,7 +20,7 @@ export default function BookingCard({
 	name,
 	path,
 	logo,
-	location,
+	landmark,
 	lat,
 	long,
 	town,
@@ -59,7 +59,7 @@ export default function BookingCard({
 								</tr>
 								<tr>
 									<td className="font-medium">Nearest Landmark:</td>
-									<td>{location}</td>
+									<td>{landmark}</td>
 								</tr>
 								<tr>
 									<td colSpan={2} className="font-medium w-full text-center">

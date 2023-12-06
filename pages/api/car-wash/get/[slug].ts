@@ -13,12 +13,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					name: true,
 					path: true,
 					logo: true,
-					location: true,
+					landmark: true,
 					lat: true,
 					long: true,
 					branch: true,
 					carWashServices: {
 						select: {
+							carTypes: true,
 							id: true,
 							carWashId: true,
 							serviceId: true,

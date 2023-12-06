@@ -22,8 +22,10 @@ interface CarWashForm {
 	logo: string;
 	path: string;
 	branch: string;
-	location: string;
-	mapsLink: string;
+	landmark: string;
+	lat: number;
+	long: number;
+
 	carWashServices: [
 		{
 			serviceId: string;
@@ -278,7 +280,7 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 										<input
 											type="text"
 											id="location"
-											{...register('location', { required: true })}
+											{...register('landmark', { required: true })}
 											className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 										/>
 									</div>
@@ -376,17 +378,38 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 										</select>
 									</div>
 
-									<div className="col-span-6 space-y-1">
+									<div className="col-span-3 space-y-1">
 										<label
-											htmlFor="mapsLink"
+											htmlFor="lat"
 											className="block text-xs font-medium text-secondary-700"
 										>
-											Maps Link <sup className="text-red-500">*</sup>
+											Latitude <sup className="text-red-500">*</sup>
 										</label>
 										<input
 											type="text"
-											id="mapsLink"
-											{...register('mapsLink', { required: true })}
+											id="lat"
+											{...register('lat', {
+												required: true,
+												pattern: /^([-+]?)([0-9]|[1-8][0-9]|90)\.(\d+)$/,
+											})}
+											className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+										/>
+									</div>
+									<div className="col-span-3 space-y-1">
+										<label
+											htmlFor="long"
+											className="block text-xs font-medium text-secondary-700"
+										>
+											Longitude <sup className="text-red-500">*</sup>
+										</label>
+										<input
+											type="text"
+											id="long"
+											{...register('long', {
+												required: true,
+												pattern:
+													/^([-+]?)((([0-9]|[1-9][0-9]|1[0-7][0-9])\.(\d+))|180(\.0+)?)$/,
+											})}
 											className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 										/>
 									</div>

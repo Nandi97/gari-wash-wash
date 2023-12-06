@@ -29,6 +29,8 @@ export default function Dashboard() {
 		queryKey: ['carwashes'],
 	});
 
+	// console.log('Car Washes:', carWashes);
+
 	const { data: towns } = useQuery<Town[]>({
 		queryFn: fetchAllTowns,
 		queryKey: ['towns'],
@@ -67,9 +69,17 @@ export default function Dashboard() {
 		}
 	}, [carWashes, selectedTown, selectedConstituency, selectedArea, searchParam]);
 
+	const handleClearFilter = () => {
+		setSelectedTown('');
+		setSelectedConstituency('');
+		setSelectedArea('');
+	};
+
 	const handleSearch = (searchInput: any) => {
 		setSearchParam(searchInput);
 	};
+
+	// console.log('Car Washes:', filter);
 	return (
 		<>
 			<div className="w-full py-4">
@@ -176,23 +186,45 @@ export default function Dashboard() {
 					<div>
 						<SearchInput onSearch={handleSearch} />
 					</div>
+					<div>
+						<button
+							type="button"
+							onClick={handleClearFilter}
+							className={`${
+								selectedTown || selectedConstituency || selectedArea
+									? 'text-secondary-700 hover:text-secondary-50 hover:bg-secondary-500 focus:outline-none  focus:ring-offset-1 border-secondary-500'
+									: 'text-slate-400 border-slate-200'
+							} sm:text-sm  bg-opacity-70 border-1  focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border text-sm font-medium leading-4  shadow-sm  bg-primary-50  `}
+							disabled={
+								selectedTown || selectedConstituency || selectedArea ? false : true
+							}
+						>
+							Clear Filter
+						</button>
+					</div>
 				</div>
 			</div>
 			<div className="grid grid-cols-12 gap-4">
-				{filter?.map((item: CarWashes) => (
-					<BookingCard
-						key={item?.id}
-						name={item?.name}
-						path={item?.id}
-						logo={item?.logo}
-						location={item?.location}
-						lat={item?.lat}
-						long={item?.long}
-						town={item?.area?.constituency?.town?.name}
-						constituency={item?.area?.constituency?.name}
-						area={item?.area?.name}
-					/>
-				))}
+				{carWashes && filter ? (
+					filter?.map((item: CarWashes) => (
+						<BookingCard
+							key={item?.id}
+							name={item?.name}
+							path={item?.id}
+							logo={item?.logo}
+							landmark={item?.landmark}
+							lat={item?.lat}
+							long={item?.long}
+							town={item?.area?.constituency?.town?.name}
+							constituency={item?.area?.constituency?.name}
+							area={item?.area?.name}
+						/>
+					))
+				) : (
+					<div className="col-span-12 text-primary-600 font-semibold text-2xl text-center w-full">
+						No Car Washes Available
+					</div>
+				)}
 			</div>
 		</>
 	);

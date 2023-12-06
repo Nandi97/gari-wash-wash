@@ -3,7 +3,7 @@ export type CarWashes = {
 	name: string;
 	path: string;
 	logo: string;
-	location: string;
+	landmark: string;
 	lat: number;
 	long: number;
 	branch: string;

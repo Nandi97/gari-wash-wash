@@ -180,32 +180,36 @@ model CarType {
   id   String @id @default(cuid())
   type String
 
+  booking          Booking[]
+  carWashServiceId String?
+  carWashService   CarWashService? @relation(fields: [carWashServiceId], references: [id])
+
   deletedAt DateTime?
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
-
-  CarWashService CarWashService[]
-  Booking        Booking[]
 }
 
 model CarWashService {
   id        String  @id @default(cuid())
   carWash   CarWash @relation(fields: [carWashId], references: [id])
   carWashId String
+
   service   Service @relation(fields: [serviceId], references: [id])
   serviceId String
-  cost      Float // Cost of the service at this car wash
-  status    Boolean @default(true)
-  carTypeId String
-  carType   CarType @relation(fields: [carTypeId], references: [id])
-  duration  Float?
+
+  carTypes CarType[]
+
+  cost   Float // Cost of the service at this car wash
+  status Boolean @default(true)
+
+  duration Float?
 
   bookingAvailability Int @default(0)
 
   deletedAt      DateTime?
   createdAt      DateTime?        @default(now())
   updatedAt      DateTime?        @updatedAt
-  BookingService BookingService[]
+  bookingService BookingService[]
 }
 
 model CarWash {
@@ -222,19 +226,19 @@ model CarWash {
   createdById String?
   createdBy   User?   @relation("CarWashCreator", fields: [createdById], references: [id])
 
+  area            Area?            @relation(fields: [areaId], references: [id])
+  areaId          String?
   // Define a relationship to users (staff members)
   sysUser         User[]           @relation("userToCarWash")
   staff           Staff[]
   carWashServices CarWashService[]
 
-  deletedAt   DateTime?
-  createdAt   DateTime?     @default(now())
-  updatedAt   DateTime?     @updatedAt
-  designation Designation[]
+  deletedAt DateTime?
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 
-  area    Area?     @relation(fields: [areaId], references: [id])
-  areaId  String?
-  Booking Booking[]
+  Booking     Booking[]
+  designation Designation[]
 }
 
 model BookingService {
@@ -258,7 +262,8 @@ model Booking {
   carWashId     String
   carType       CarType  @relation(fields: [carTypeId], references: [id])
   carTypeId     String
-  bookingDate   DateTime // Date and time of the booking
+  bookingDate   DateTime
+  bookingTime   DateTime
   status        Int      @default(0) // Status of the booking (e.g., scheduled, completed)
   totalCost     Float? // Total cost of the booking
   paymentStatus Int      @default(0) // Payment status (e.g., paid, pending)
