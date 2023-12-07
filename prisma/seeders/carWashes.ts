@@ -19,7 +19,7 @@ export function getCarWashes() {
 		{
 			path: 'rodriguez-group',
 			name: 'Rodriguez Group',
-			logo: 'https://picsum.photos/id/23/7200/300',
+			logo: 'https://picsum.photos/id/23/200/300',
 			location: '0 Oak Valley Junction',
 			lat: -7.7629501,
 			long: 112.7271303,

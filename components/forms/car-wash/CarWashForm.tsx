@@ -25,12 +25,12 @@ interface CarWashForm {
 	landmark: string;
 	lat: number;
 	long: number;
-
+	bookingLeadTime: number;
 	carWashServices: [
 		{
 			serviceId: string;
 			cost: number;
-			carTypeId: string;
+			carTypes: any[];
 		},
 	];
 	areaId: string;
@@ -51,13 +51,8 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 	const [selectedConstituency, setSelectedConstituency] = useState<any>();
 	const [selectedLogo, setSelectedLogo] = useState<string>('');
 	const logoRef = useRef<HTMLInputElement>(null);
-	const [carWashServices, setCarWashServices] = useState<any>([
-		{
-			serviceId: '',
-			cost: 0,
-			carTypeId: '',
-		},
-	]);
+	const [carWashServices, setCarWashServices] = useState<any>([]);
+	const [toggle, setToggle] = useState(false);
 
 	const { data: towns } = useQuery({
 		queryFn: fetchAllTowns,
@@ -113,39 +108,50 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 		}
 	};
 
-	const handleAddCarWashService = () => {
+	const handleAddCarWashService = (newService: any) => {
+		// console.log('New Car Wash service,', newService);
 		const newItem = {
-			serviceId: '',
-			cost: 0,
-			carTypeId: '',
+			key: carWashServices.length + 1,
+			...newService,
 		};
 		setCarWashServices([...carWashServices, newItem]);
 	};
-
-	const handleRemoveCarWashService = (index: any) => {
-		const updatedItems = [...carWashServices];
-		updatedItems.splice(index, 1);
-		setCarWashServices(updatedItems);
+	const handleRemoveItem = (key: any) => {
+		const updatedServices = carWashServices.filter((item) => item.key !== key);
+		setCarWashServices(updatedServices);
 	};
 
-	const handleChangeCarWashService = (index: any, event: any) => {
-		const { name, value } = event.target;
-		const updatedItems = [...carWashServices];
-		updatedItems[index][name] = value;
-		setCarWashServices(updatedItems);
-	};
+	function convertToSlug(inputString: string) {
+		// Convert to lowercase and replace spaces with hyphens
+		const slug = inputString.toLowerCase().replace(/\s+/g, '-');
+
+		// Remove special characters
+		const cleanedSlug = slug.replace(/[^\w\-]+/g, '');
+
+		return cleanedSlug;
+	}
+	const options = [
+		{ name: '1 hour', time: 1 },
+		{ name: '6 hours', time: 6 },
+		{ name: '12 hours', time: 12 },
+		{ name: '1 day', time: 24 },
+		{ name: '2 days', time: 48 },
+	];
 
 	const handleSubmitForm: SubmitHandler<CarWashForm> = (data) => {
 		try {
 			if (selectedLogo) {
 				data.logo = selectedLogo;
 			} else {
-				data.logo = logo_placeholder.src;
+				data.logo = '/assets/images/logo-placeholder-image.png';
 			}
 			if (carWashServices) {
 				data.carWashServices = carWashServices;
 			}
 
+			if (data?.name) {
+				data.path = convertToSlug(data?.name);
+			}
 			// console.log('Form Data:', data);
 			onSubmit(data);
 		} catch (error) {
@@ -213,7 +219,7 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 									</div>
 								</div>
 								<div className="md:col-span-8 col-span-6 grid md:grid-cols-12 grid-cols-6 gap-4">
-									<div className="col-span-6 space-y-1">
+									<div className="col-span-8 space-y-1">
 										<label
 											htmlFor="name"
 											className="block text-xs font-medium text-secondary-700"
@@ -232,31 +238,8 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 											</p>
 										)}
 									</div>
-									<div className="col-span-6 space-y-1">
-										<label
-											htmlFor="path"
-											className="block text-xs font-medium text-secondary-700"
-										>
-											Path <sup className="text-red-500">*</sup>
-										</label>
-										<input
-											type="text"
-											id="path"
-											{...register('path', {
-												required: true,
-												pattern:
-													/^[a-zA-Z]{10}-[a-zA-Z]{10}(-[a-zA-Z]{10})?$/,
-											})}
-											className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
-										/>
-										{errors.path && (
-											<p className="text-xs text-red-500">
-												Please enter a valid pattern like
-												&apos;abc-abc&apos; or &apos;abc-abc-abc&apos;.
-											</p>
-										)}
-									</div>
-									<div className="col-span-6 space-y-1">
+
+									<div className="col-span-5 space-y-1">
 										<label
 											htmlFor="branch"
 											className="block text-xs font-medium text-secondary-700"
@@ -270,7 +253,7 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 											className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 										/>
 									</div>
-									<div className="col-span-6 space-y-1">
+									<div className="col-span-9 space-y-1">
 										<label
 											htmlFor="location"
 											className="block text-xs font-medium text-secondary-700"
@@ -413,6 +396,34 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 											className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 										/>
 									</div>
+									<div className="md:col-span-4 col-span-12 space-y-1">
+										<label
+											htmlFor="bookingLeadTime"
+											className="block text-xs font-medium text-secondary-700"
+										>
+											LeadTime for Bookings
+										</label>
+										<select
+											id="bookingLeadTime"
+											{...register('bookingLeadTime', { required: true })}
+											className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+											required
+										>
+											<option
+												selected
+												disabled
+												value=""
+												className="text-opacity-50 text-secondary-700"
+											>
+												--Select Time--
+											</option>
+											{options?.map((item: any, index: any) => (
+												<option key={index} value={item?.time}>
+													{item?.name}
+												</option>
+											))}
+										</select>
+									</div>
 								</div>
 							</div>
 							<div className="w-full flex items-center py-2 justify-center">
@@ -451,22 +462,70 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 							<div className="flex w-full divide-solid py-2">
 								<button
 									type="button"
-									onClick={handleAddCarWashService}
+									onClick={(e) => {
+										e.stopPropagation();
+										setToggle(true);
+									}}
 									className="bg-primary-600 text-white text-sm flex items-center p-2 rounded-md"
 								>
 									<Icon icon="heroicons:plus" /> <span> Add A Purchase Item</span>
 								</button>
 							</div>
 							<div className="w-full flex flex-col space-y-3">
-								{carWashServices.map((item: any, index: any) => (
-									// console.log('Item:', item)
+								<table className="w-full text-sm text-left rtl:text-right text-gray-500 border">
+									<thead className="text-xs text-gray-700 uppercase bg-primary-300">
+										<tr>
+											<th scope="col" className="px-6 py-3">
+												#
+											</th>
+											<th scope="col" className="px-6 py-3">
+												Service
+											</th>
+											<th scope="col" className="px-6 py-3">
+												Car Types
+											</th>
+											<th scope="col" className="px-6 py-3">
+												Cost
+											</th>
+											<th scope="col" className="px-6 py-3"></th>
+										</tr>
+									</thead>
+									<tbody>
+										{carWashServices?.map((item) => (
+											<tr key={item?.key} className="bg-white border-b">
+												<th
+													scope="row"
+													className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+												>
+													{item?.key}
+												</th>
+												<td className="px-6 py-4">{item?.serviceId}</td>
+												<td className="px-6 py-4">
+													{item?.carTypes
+														.map((carType) => carType?.type)
+														.join(', ')}
+												</td>
+												<td className="px-6 py-4">{item?.cost} KES</td>
+												<td className="px-6 py-4">
+													<button
+														onClick={() => handleRemoveItem(item?.key)}
+														type="button"
+													>
+														<Icon icon="heroicons:trash" />
+													</button>
+												</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+								{/* {carWashServices.map((item: any, index: any) => (
 									<CarWashServiceForm
 										key={index}
 										initialValues={item}
 										onClick={() => handleRemoveCarWashService(index)}
 										onChange={(e) => handleChangeCarWashService(index, e)}
 									/>
-								))}
+								))} */}
 							</div>
 							<div className="w-full flex items-center py-2 justify-center">
 								<button
@@ -480,6 +539,12 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 					</AccordionContent>
 				</AccordionItem>
 			</Accordion>
+			{toggle && (
+				<CarWashServiceForm
+					setToggle={setToggle}
+					addCarWashService={handleAddCarWashService}
+				/>
+			)}
 		</form>
 	);
 }

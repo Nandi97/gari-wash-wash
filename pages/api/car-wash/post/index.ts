@@ -13,14 +13,14 @@ interface FormData {
 	path: string;
 	branch: string;
 	landmark: string;
-	lat: number;
-	long: number;
+	lat: string;
+	long: string;
 	logo: string;
 	areaId: string;
-	bookingLeadTime: number;
+	bookingLeadTime: string;
 	carWashServices: {
 		serviceId: string;
-		cost: number;
+		cost: string;
 		carTypes: {
 			id: string;
 		}[];
@@ -40,15 +40,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					path: formData.path,
 					branch: formData.branch,
 					landmark: formData.landmark,
-					lat: formData.lat,
-					long: formData.long,
+					lat: parseFloat(formData.lat),
+					long: parseFloat(formData.long),
 					logo: formData.logo,
 					areaId: formData.areaId,
-					bookingLeadTime: 1,
+					bookingLeadTime: parseFloat('1'),
 					carWashServices: {
 						create: formData.carWashServices.map((item) => ({
 							serviceId: item.serviceId,
-							cost: item.cost,
+							cost: parseFloat(item.cost),
 							carTypes: {
 								connect: item.carTypes.map((type: any) => ({
 									id: type.id,

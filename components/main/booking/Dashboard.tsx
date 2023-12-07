@@ -83,7 +83,7 @@ export default function Dashboard() {
 	return (
 		<>
 			<div className="w-full py-4">
-				<div className="flex md:flex-auto flex-wrap space-y-1 sticky  items-end space-x-2">
+				<div className="flex md:flex-auto flex-wrap space-y-1 sticky items-end space-x-2">
 					<div className="text-secondary-700">Filter by :</div>
 					<div>
 						<label
@@ -117,7 +117,7 @@ export default function Dashboard() {
 							))}
 						</select>
 					</div>
-					<div>
+					<div className="">
 						<label
 							htmlFor="constituency"
 							className="block text-xs font-medium text-secondary-700 "
@@ -150,7 +150,7 @@ export default function Dashboard() {
 							))}
 						</select>
 					</div>
-					<div>
+					<div className="hidden md:flex">
 						<label
 							htmlFor="area"
 							className="block text-xs font-medium text-secondary-700 "

@@ -43,7 +43,7 @@ export default function BookingCard({
 					</div>
 					<div className="col-span-9">
 						<table className="text-xs table-fixed w-full  text-left rtl:text-right text-gray-800 ">
-							<thead className=" text-gray-700 uppercase  ">
+							<thead className=" text-gray-700 uppercase  bg-slate-200">
 								<tr className="text-center">
 									<th scope="col" colSpan={2} className="font-semibold">
 										{name}
@@ -52,14 +52,14 @@ export default function BookingCard({
 							</thead>
 							<tbody>
 								<tr>
-									<td className="font-medium">Location:</td>
-									<td>
+									<td className="font-medium text-start">Location:</td>
+									<td className="text-start">
 										{town}, {constituency}, {area}
 									</td>
 								</tr>
 								<tr>
-									<td className="font-medium">Nearest Landmark:</td>
-									<td>{landmark}</td>
+									<td className="font-medium text-start">Nearest Landmark:</td>
+									<td className="text-start">{landmark}</td>
 								</tr>
 								<tr>
 									<td colSpan={2} className="font-medium w-full text-center">
@@ -75,7 +75,7 @@ export default function BookingCard({
 						</table>
 					</div>
 				</div>
-				<div className="w-full h-20 py-1 rounded-md">
+				<div className="w-full py-1 rounded-md">
 					<Map
 						className="aspect-video"
 						// width="200"
