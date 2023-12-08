@@ -25,7 +25,9 @@ interface BookingForm {
 	carWashId: string;
 	carTypeId: string;
 	bookingDate: string;
-	serviceId: string;
+	bookingService: {
+		serviceId: string;
+	}[];
 }
 
 interface BookingFormProps {
@@ -59,7 +61,9 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 		.map((item) => item?.carTypes)
 		.flat();
 
-	// console.log('Car Types:', carTypes);
+	const serviceCost = data?.find((service) => service?.serviceId === selectedService)?.cost;
+
+	// console.log('Car Wash:', serviceCost);
 
 	const goToPreviousMonth = () => {
 		setCurrentMonth((prevMonth) => addMonths(prevMonth, -1));
@@ -216,7 +220,7 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 								<li className="relative flex xl:static">
 									<div className="flex-auto">
 										<h3 className="pr-10 font-semibold text-gray-900 xl:pr-0">
-											Meeting Name
+											Car Wash Service
 										</h3>
 										<dl className="mt-2 flex flex-col text-gray-500 xl:flex-row">
 											<div className="flex items-start space-x-3">
@@ -230,7 +234,7 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 												</dt>
 												<dd>
 													<time dateTime={`meeting.datetime`}>
-														{`meeting.date`} at {`meeting.time`}
+														{dateOfBooking} at {timeOfBooking}
 													</time>
 												</dd>
 											</div>
@@ -243,7 +247,7 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 														aria-hidden="true"
 													/>
 												</dt>
-												<dd>{`meeting.location`}</dd>
+												<dd>{data?.[0]?.carWash?.landmark}</dd>
 											</div>
 										</dl>
 									</div>
@@ -314,6 +318,8 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 								type="time"
 								name="bookingTime"
 								id="bookingTime"
+								value={timeOfBooking}
+								onChange={(e) => setTimeOfBooking(e.target.value)}
 								autoComplete="family-name"
 								className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 							/>
@@ -372,7 +378,7 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 							>
 								<option
 									disabled
-									defaultValue=""
+									selected
 									value=""
 									className="text-opacity-50 text-secondary-700"
 								>
@@ -388,116 +394,6 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 									<></>
 								)}
 							</select>
-						</div>
-						<div className="sm:col-span-4">
-							<label
-								htmlFor="email"
-								className="block text-sm font-medium leading-6 text-gray-900"
-							>
-								Email address
-							</label>
-							<div className="mt-2">
-								<input
-									id="email"
-									name="email"
-									type="email"
-									autoComplete="email"
-									className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-								/>
-							</div>
-						</div>
-
-						<div className="sm:col-span-3">
-							<label
-								htmlFor="country"
-								className="block text-sm font-medium leading-6 text-gray-900"
-							>
-								Country
-							</label>
-							<div className="mt-2">
-								<select
-									id="country"
-									name="country"
-									autoComplete="country-name"
-									className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-								>
-									<option>United States</option>
-									<option>Canada</option>
-									<option>Mexico</option>
-								</select>
-							</div>
-						</div>
-
-						<div className="col-span-full">
-							<label
-								htmlFor="street-address"
-								className="block text-sm font-medium leading-6 text-gray-900"
-							>
-								Street address
-							</label>
-							<div className="mt-2">
-								<input
-									type="text"
-									name="street-address"
-									id="street-address"
-									autoComplete="street-address"
-									className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-								/>
-							</div>
-						</div>
-
-						<div className="sm:col-span-2 sm:col-start-1">
-							<label
-								htmlFor="city"
-								className="block text-sm font-medium leading-6 text-gray-900"
-							>
-								City
-							</label>
-							<div className="mt-2">
-								<input
-									type="text"
-									name="city"
-									id="city"
-									autoComplete="address-level2"
-									className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-								/>
-							</div>
-						</div>
-
-						<div className="sm:col-span-2">
-							<label
-								htmlFor="region"
-								className="block text-sm font-medium leading-6 text-gray-900"
-							>
-								State / Province
-							</label>
-							<div className="mt-2">
-								<input
-									type="text"
-									name="region"
-									id="region"
-									autoComplete="address-level1"
-									className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-								/>
-							</div>
-						</div>
-
-						<div className="sm:col-span-2">
-							<label
-								htmlFor="postal-code"
-								className="block text-sm font-medium leading-6 text-gray-900"
-							>
-								ZIP / Postal code
-							</label>
-							<div className="mt-2">
-								<input
-									type="text"
-									name="postal-code"
-									id="postal-code"
-									autoComplete="postal-code"
-									className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-								/>
-							</div>
 						</div>
 					</div>
 				</div>

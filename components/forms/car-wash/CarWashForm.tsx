@@ -40,10 +40,20 @@ interface CarWashFormProps {
 	initialValues?: CarWashForm;
 	isPending: boolean;
 }
+interface Service {
+	id: string;
+	name: string;
+	description: string;
+}
 
 const fetchAllTowns = async () => {
 	const response = await axios.get('/api/town/get');
 	return response.data as Array<Town>;
+};
+
+const fetchAllCarWashServices = async () => {
+	const response = await axios.get('/api/service/get');
+	return response.data as Array<Service>;
 };
 export default function CarWashForm({ onSubmit, initialValues, isPending }: CarWashFormProps) {
 	const [accValue, setAccValue] = useState('one');
@@ -57,6 +67,11 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 	const { data: towns } = useQuery({
 		queryFn: fetchAllTowns,
 		queryKey: ['towns'],
+	});
+
+	const { data: services } = useQuery({
+		queryFn: fetchAllCarWashServices,
+		queryKey: ['carWashServices'],
 	});
 
 	const constituencies = towns
@@ -77,6 +92,7 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 	// console.log('Towns:', selectedConstituency);
 	// console.log('Towns:', constituencies);
 	// console.log('Towns:', areas);
+	// console.log('Car Wash Services:', carWashServices);
 
 	const {
 		register,
@@ -141,7 +157,8 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 	const handleSubmitForm: SubmitHandler<CarWashForm> = (data) => {
 		try {
 			if (selectedLogo) {
-				data.logo = selectedLogo;
+				// data.logo = selectedLogo;
+				data.logo = '/assets/images/logo-placeholder-image.png';
 			} else {
 				data.logo = '/assets/images/logo-placeholder-image.png';
 			}
@@ -499,7 +516,14 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 												>
 													{item?.key}
 												</th>
-												<td className="px-6 py-4">{item?.serviceId}</td>
+												<td className="px-6 py-4">
+													{
+														services?.find(
+															(service) =>
+																service?.id === item.serviceId
+														)?.name
+													}
+												</td>
 												<td className="px-6 py-4">
 													{item?.carTypes
 														.map((carType) => carType?.type)
@@ -530,9 +554,37 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 							<div className="w-full flex items-center py-2 justify-center">
 								<button
 									type="submit"
-									className="border rounded-md bg-secondary-600 text-white hover:bg-secondary-600/90 p-1"
+									className={`border w-14 h-8 rounded-md flex items-center justify-center ${
+										isPending
+											? 'bg-slate-600 text-white'
+											: 'bg-secondary-600 text-white hover:bg-secondary-600/90'
+									}  p-1`}
+									disabled={isPending ? true : false}
 								>
-									Save
+									{isPending ? (
+										<span>
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												viewBox="0 0 24 24"
+												className="text-white h-5 w-5"
+											>
+												<path
+													fill="currentColor"
+													d="M10.14,1.16a11,11,0,0,0-9,8.92A1.59,1.59,0,0,0,2.46,12,1.52,1.52,0,0,0,4.11,10.7a8,8,0,0,1,6.66-6.61A1.42,1.42,0,0,0,12,2.69h0A1.57,1.57,0,0,0,10.14,1.16Z"
+												>
+													<animateTransform
+														attributeName="transform"
+														dur="0.75s"
+														repeatCount="indefinite"
+														type="rotate"
+														values="0 12 12;360 12 12"
+													/>
+												</path>
+											</svg>
+										</span>
+									) : (
+										<span>Save</span>
+									)}
 								</button>
 							</div>
 						</div>

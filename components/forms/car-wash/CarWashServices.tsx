@@ -15,7 +15,7 @@ interface CarType {
 	type: string;
 }
 const fetchAllCarWashServices = async () => {
-	const response = await axios.get('/api/car-wash-service/get');
+	const response = await axios.get('/api/service/get');
 	return response.data as Array<Service>;
 };
 const fetchAllCarTypes = async () => {
@@ -44,7 +44,7 @@ export default function CarWashServiceForm({
 		queryFn: fetchAllCarWashServices,
 		queryKey: ['carWashServices'],
 	});
-
+	// console.log(services);
 	const { data: types } = useQuery({
 		queryFn: fetchAllCarTypes,
 		queryKey: ['carTypes'],

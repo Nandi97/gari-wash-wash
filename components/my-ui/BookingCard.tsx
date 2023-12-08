@@ -81,7 +81,7 @@ export default function BookingCard({
 						// width="200"
 						height="160"
 						center={[lat, long]}
-						zoom={5}
+						zoom={13}
 					>
 						{({ TileLayer, Marker, Popup }: any) => (
 							<>
