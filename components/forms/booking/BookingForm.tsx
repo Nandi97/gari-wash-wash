@@ -25,8 +25,7 @@ interface BookingForm {
 	carWashId: string;
 	carTypeId: string;
 	bookingDate: string;
-
-	serviceId: string[];
+	serviceId: string;
 }
 
 interface BookingFormProps {
@@ -35,30 +34,32 @@ interface BookingFormProps {
 	isPending: boolean;
 }
 
-//Fetch A Staff
-const fetchACarWash = async (slug: string) => {
-	const response = await axios.get(`/api/car-wash/get/${slug}`);
-	return response.data;
-};
-
 export default function BookingForm({ onSubmit, initialValues, isPending }: BookingFormProps) {
 	const params = useParams();
 	const [currentMonth, setCurrentMonth] = useState(new Date());
 	const cwId = params?.['car-wash-id'];
 	const [dateOfBooking, setDateOfBooking] = useState<any>();
 	const [timeOfBooking, setTimeOfBooking] = useState<any>();
+	const [selectedService, setSelectedService] = useState<any>();
 
 	const { data } = useQuery({
-		queryKey: ['detailCarWash'],
-		queryFn: () => {
-			if (cwId) {
-				return fetchACarWash(cwId as string);
-			} else {
-				return Promise.reject(new Error('CarWash ID not provided'));
-			}
-		},
+		queryKey: ['cws', cwId],
+		queryFn: () =>
+			axios
+				.get('/api/car-wash-service/get', {
+					params: { cwId },
+				})
+				.then((response) => response.data),
 	});
+
 	// console.log('Current car wash:', data);
+	// console.log('Current car wash:', selectedService);
+	const carTypes = data
+		?.filter((item) => item?.serviceId === selectedService)
+		.map((item) => item?.carTypes)
+		.flat();
+
+	// console.log('Car Types:', carTypes);
 
 	const goToPreviousMonth = () => {
 		setCurrentMonth((prevMonth) => addMonths(prevMonth, -1));
@@ -256,6 +257,7 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 								days={daysArray}
 								onPrevMonth={goToPreviousMonth}
 								onNextMonth={goToNextMonth}
+								selectedDate={dateOfBooking}
 							/>
 						</div>
 					</div>
@@ -276,11 +278,11 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 									autoComplete="given-name"
 									className="sm:text-sm w-full bg-slate-50 bg-opacity-70 border-1  shadow-accent-300  block p-2.5 h-8  px-3 py-1 shadow-slate-300 rounded-md border border-slate-300 text-sm font-medium leading-4 text-slate-400 shadow-sm"
 									disabled
-									value={data?.name}
+									value={data?.[0]?.carWash?.name}
 								/>
 							</div>
 						</div>
-						<div className="sm:col-span-2 space-y-1"></div>
+						<div className="sm:col-span-2 space-y-1 hidden md:flex"></div>
 						<div className="sm:col-span-2 space-y-1">
 							<label
 								htmlFor="bookingDate"
@@ -293,12 +295,14 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 									type="date"
 									name="bookingDate"
 									id="bookingDate"
+									value={dateOfBooking}
+									onChange={(e) => setDateOfBooking(e.target.value)}
 									autoComplete="family-name"
 									className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 								/>
 							</div>
 						</div>
-						<div className="sm:col-span-1 space-y-1">
+						<div className="sm:col-span-2 space-y-1">
 							<label
 								htmlFor="bookingTime"
 								className="block text-xs font-medium text-secondary-700"
@@ -314,22 +318,57 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 								className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 							/>
 						</div>
-
+						<div className="sm:col-span-2 space-y-1 hidden md:flex"></div>
 						<div className="sm:col-span-3 space-y-1">
 							<label
-								htmlFor="last-name"
+								htmlFor="serviceId"
+								className="block text-xs font-medium text-secondary-700"
+							>
+								Service
+							</label>
+							<select
+								id="serviceId"
+								name="serviceId"
+								value={selectedService}
+								onChange={(e) => setSelectedService(e.target.value)}
+								className=" sm:text-sm w-full  bg-opacity-70 border-1 focus:shadow-inner bg-white border-secondary-300 shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+								disabled={data ? false : true}
+							>
+								<option
+									disabled
+									selected
+									value=""
+									className="text-opacity-50 text-secondary-700"
+								>
+									--Select Service--
+								</option>
+								{data ? (
+									data?.map((item: any) => (
+										<option key={item?.id} value={item?.serviceId}>
+											{item?.service?.name}
+										</option>
+									))
+								) : (
+									<></>
+								)}
+							</select>
+						</div>
+						<div className="sm:col-span-3 space-y-1">
+							<label
+								htmlFor="carTypeId"
 								className="block text-xs font-medium text-secondary-700"
 							>
 								Car Type
 							</label>
 							<select
 								{...register('carTypeId', { required: true })}
-								id="roleId"
+								id="carTypeId"
 								className={`${
 									errors.carTypeId
 										? 'bg-red-50 border-red-300'
 										: 'bg-white border-secondary-300'
 								} sm:text-sm w-full  bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1`}
+								disabled={selectedService ? false : true}
 							>
 								<option
 									disabled
@@ -339,18 +378,17 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 								>
 									--Select Car Type--
 								</option>
-								{/* {roles ? (
-									roles?.map((item) => (
+								{carTypes ? (
+									carTypes?.map((item) => (
 										<option key={item?.id} value={item?.id}>
-											{item?.name}
+											{item?.type}
 										</option>
 									))
 								) : (
 									<></>
-								)} */}
+								)}
 							</select>
 						</div>
-
 						<div className="sm:col-span-4">
 							<label
 								htmlFor="email"

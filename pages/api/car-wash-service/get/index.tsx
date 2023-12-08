@@ -4,14 +4,15 @@ import prisma from '@/lib/prisma';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	if (req.method === 'GET') {
 		try {
-			const data = await prisma.service.findMany({
+			const cwId = req.query.car_wash_id;
+			const data = await prisma.carWashService.findMany({
 				where: {
-					deletedAt: null,
+					carWashId: cwId as string,
 				},
-				select: {
-					id: true,
-					name: true,
-					description: true,
+				include: {
+					carTypes: true,
+					service: true,
+					carWash: true,
 				},
 				orderBy: {
 					createdAt: 'asc',

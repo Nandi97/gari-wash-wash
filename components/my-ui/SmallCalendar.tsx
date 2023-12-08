@@ -13,10 +13,21 @@ interface SmallCalendarProps {
 	days: Day[];
 	onPrevMonth: () => void;
 	onNextMonth: () => void;
+	selectedDate: string | undefined;
 }
 
 function classNames(...classes: string[]): string {
 	return classes.filter(Boolean).join(' ');
+}
+
+function getWeekDays(): string[] {
+	const date = new Date();
+	const weekdays = [];
+	for (let i = 0; i < 7; i++) {
+		weekdays.push(date.toLocaleDateString('en-US', { weekday: 'short' }));
+		date.setDate(date.getDate() + 1);
+	}
+	return weekdays;
 }
 
 export default function SmallCalendar({
@@ -25,7 +36,13 @@ export default function SmallCalendar({
 	days,
 	onPrevMonth,
 	onNextMonth,
+	selectedDate,
 }: SmallCalendarProps) {
+	const weekdays = getWeekDays();
+
+	// console.log(days?.[0]?.date);
+	// console.log(selectedDate);
+
 	return (
 		<div>
 			<div className="mt-10 text-center lg:col-start-8 lg:col-end-13 lg:row-start-1 lg:mt-9 xl:col-start-9">
@@ -57,13 +74,7 @@ export default function SmallCalendar({
 					</button>
 				</div>
 				<div className="mt-6 grid grid-cols-7 text-xs leading-6 text-gray-500">
-					<div>M</div>
-					<div>T</div>
-					<div>W</div>
-					<div>T</div>
-					<div>F</div>
-					<div>S</div>
-					<div>S</div>
+					{weekdays?.map((day) => <div key={day}>{day}</div>)}
 				</div>
 				<div className="isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200">
 					{days?.map((day, dayIdx) => (
@@ -72,8 +83,8 @@ export default function SmallCalendar({
 							className={classNames(
 								'py-1.5 hover:bg-gray-100 focus:z-10',
 								day?.isCurrentMonth ? 'bg-white' : 'bg-gray-50',
-								(day?.isSelected || day?.isToday) && 'font-semibold',
-								day?.isSelected && 'text-white',
+								day?.date === selectedDate && 'font-semibold', // Check if the date matches selectedDate
+								day?.date === selectedDate && 'text-white', // Apply styles for the selected date
 								!day?.isSelected &&
 									day?.isCurrentMonth &&
 									!day?.isToday &&
