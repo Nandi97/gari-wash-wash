@@ -17,6 +17,7 @@ import {
 	eachDayOfInterval,
 	isSameMonth,
 } from 'date-fns';
+import Link from 'next/link';
 
 interface BookingForm {
 	name: string;
@@ -129,8 +130,10 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 		// Set the formatted date in the state
 		setFormData(formattedResult);
 	};
+	// Get the current date in "YYYY-MM-DD" format
+	// const currentDate = new Date().toISOString().split('T')[0];
 
-	// console.log(formData);
+	// console.log(currentDate);
 
 	return (
 		<form action="" className="bg-secondary-50 p-4 rounded-md">
@@ -171,7 +174,7 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 								Phone Number
 							</label>
 							<div className="mt-2">
-								<div className="flex border border-secondary-300 text-sm font-medium p-2.5 h-8 focus:shadow-inner shadow-secondary-300  focus:border-secondary-500  px-3 py-1 rounded-md shadow-sm ring-1 ring-inset ring-gray-300  focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1">
+								<div className="flex border border-secondary-300 text-sm font-medium p-2.5 h-8 focus:shadow-inner shadow-secondary-300  focus:border-secondary-500  px-3 py-1 rounded-md shadow-sm ring-1 ring-inset ring-gray-300  focus-within:ring-inset focus-within:ring-primary-600 sm:max-w-md hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1">
 									<span className="flex select-none items-center pl-1 text-gray-500 sm:text-sm">
 										+254
 									</span>
@@ -298,11 +301,13 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 								<input
 									type="date"
 									name="bookingDate"
+									min={new Date().toISOString().split('T')[0]}
 									id="bookingDate"
 									value={dateOfBooking}
 									onChange={(e) => setDateOfBooking(e.target.value)}
 									autoComplete="family-name"
 									className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+									required
 								/>
 							</div>
 						</div>
@@ -317,11 +322,14 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 							<input
 								type="time"
 								name="bookingTime"
+								min="08:00"
+								max="21:00"
 								id="bookingTime"
 								value={timeOfBooking}
 								onChange={(e) => setTimeOfBooking(e.target.value)}
 								autoComplete="family-name"
 								className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+								required
 							/>
 						</div>
 						<div className="sm:col-span-2 space-y-1 hidden md:flex"></div>
@@ -400,12 +408,12 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 			</div>
 
 			<div className="mt-6 flex items-center justify-end gap-x-6">
-				<button type="button" className="text-sm font-semibold leading-6 text-gray-900">
+				<Link href="/booking" className="text-sm font-semibold leading-6 text-gray-900">
 					Cancel
-				</button>
+				</Link>
 				<button
 					type="submit"
-					className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+					className="rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
 				>
 					Save
 				</button>

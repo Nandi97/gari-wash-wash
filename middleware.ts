@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 // middleware is applied to all routes, use conditionals to select
 
 export default withAuth(
-	function middleware(req) {
+	async function middleware(req) {
 		// console.log(req.nextauth.token);
 	},
 	{
@@ -14,6 +14,8 @@ export default withAuth(
 
 		callbacks: {
 			authorized: ({ req, token }) => {
+				// console.log('Token', token.role.name);
+				// console.log('Request', req);
 				if (token === null) {
 					return false;
 				}

@@ -30,7 +30,7 @@ export default function BookingCard({
 	const pathname = usePathname();
 	return (
 		<>
-			<div className="shadow rounded-md bg-primary-200 md:col-span-3 col-span-12 p-2 flex flex-col group hover:shadow-md z-0">
+			<div className="shadow rounded-md bg-primary-200 md:col-span-3 col-span-12 overflow-hidden h-52 p-2 flex flex-col group hover:shadow-md z-0">
 				<div className="grid grid-cols-12">
 					<div className="col-span-3">
 						<Image
@@ -77,9 +77,9 @@ export default function BookingCard({
 				</div>
 				<div className="w-full py-1 rounded-md">
 					<Map
-						className="aspect-video"
+						className="aspect-video w-full h-full pb-2"
 						// width="200"
-						height="160"
+						// height="160"
 						center={[lat, long]}
 						zoom={13}
 					>

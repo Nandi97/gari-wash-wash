@@ -264,9 +264,9 @@ model Booking {
   carTypeId     String
   bookingDate   DateTime
   bookingTime   DateTime
-  status        Int      @default(0) // Status of the booking (e.g., scheduled, completed)
-  totalCost     Float? // Total cost of the booking
-  paymentStatus Int      @default(0) // Payment status (e.g., paid, pending)
+  status        Int      @default(0)
+  totalCost     Float?
+  paymentStatus Int      @default(0)
 
   deletedAt DateTime?
   createdAt DateTime? @default(now())
