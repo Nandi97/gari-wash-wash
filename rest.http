@@ -4,3 +4,46 @@
 # @name menus
 GET {{host}}/menu/get Http/1.1
 Content-Type: application/json
+
+###
+# @name menus
+POST  {{host}}/car-wash/post Http/1.1
+Content-Type: application/json
+
+{
+  "name": "Test Car Wash",
+  "path": "test-car-wash",
+  "branch": "test-branch",
+  "landmark": "Test Landmark",
+  "lat": 1.234567,
+  "long": 45.678901,
+  "logo": "path/to/test/logo.png",
+  "areaId": "clq40afkz000q1p47mkccsj17",
+  "bookingLeadTime": 1,
+  "carWashServices": [
+    {
+      "serviceId": "clq40afj800031p47fh0bahiw",
+      "cost": 300,
+      "carTypes": [
+        {
+          "id": "clq40afk500081p47k5gpkxoc"
+        },
+        {
+          "id": "clq40afkd00091p47bx3ir8nv"
+        }
+      ]
+    },
+    {
+      "serviceId": "clq40afjn00051p470pci971y",
+      "cost": 1000,
+      "carTypes": [
+        {
+          "id": "clq40afkd00091p47bx3ir8nv"
+        },
+        {
+          "id": "clq40afkm000a1p47thw9025t"
+        }
+      ]
+    }
+  ]
+}

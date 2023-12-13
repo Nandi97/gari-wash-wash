@@ -4,10 +4,7 @@ import Map from '@/components/my-ui/Map';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useParams } from 'next/navigation';
-import { Fragment, useState } from 'react';
-import { Menu, Transition } from '@headlessui/react';
-import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
-import { Icon } from '@iconify/react/dist/iconify.js';
+import { useState } from 'react';
 import BorderlessSideBySideCalendar from '@/components/my-ui/BorderlessSideBySideCalendar';
 import {
 	addMonths,
@@ -63,13 +60,21 @@ export default function ShowBooking() {
 			isToday: isSameDay(date, new Date()),
 		})
 	);
-	const setAddTime = (time: string) => {
-		const addingTime = add(new Date(time), { hours: 1 });
-		const formattedTime = format(addingTime, 'h:mm a');
-		return formattedTime;
+
+	const setAddTime = (time: any) => {
+		try {
+			const addingTime = add(new Date(time), { hours: 1 });
+			const formattedTime = format(addingTime, 'h:mm a');
+			return formattedTime;
+		} catch (error) {
+			console.error('Error in setAddTime:', error);
+			return '';
+		}
 	};
 
-	// console.log(format(new Date(data?.bookingDate), 'yyyy-MM-dd'));
+	const dateVal = new Date(data?.bookingDate);
+	const timeVal = new Date(data?.bookingTime);
+	// console.log('Boooking Date & Time:', dateVal, timeVal);
 
 	return (
 		<div className="flex bg-primary-50 z-[6] fixed overflow-y-auto top-0 left-0 w-full h-full">
@@ -158,28 +163,34 @@ export default function ShowBooking() {
 									</dd>
 								</div>
 								<div>
-									{data?.carWash?.lat && data?.carWash?.long && (
-										<Map
-											className="aspect-video w-full h-full pb-2"
-											width="800"
-											height="450"
-											center={[data?.carWash.lat, data.carWash.long]}
-											zoom={20}
-										>
-											{({ TileLayer, Marker, Popup }: any) => (
-												<>
-													<Marker
-														position={[
-															data?.carWash.lat,
-															data?.carWash.long,
-														]}
-													>
-														<Popup>{data?.carWash?.name} </Popup>
-													</Marker>
-												</>
-											)}
-										</Map>
-									)}
+									{data?.carWash?.lat &&
+										data?.carWash?.long &&
+										data.carWash.name && (
+											<Map
+												className="aspect-video w-full h-full pb-2"
+												width="800"
+												height="450"
+												center={[data?.carWash.lat, data.carWash.long]}
+												zoom={20}
+											>
+												{({ TileLayer, Marker, Popup }: any) => (
+													<>
+														<TileLayer
+															url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+															attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+														/>
+														<Marker
+															position={[
+																data.carWash.lat,
+																data.carWash.long,
+															]}
+														>
+															<Popup>{data.carWash.name} </Popup>
+														</Marker>
+													</>
+												)}
+											</Map>
+										)}
 								</div>
 							</dl>
 
@@ -218,25 +229,16 @@ export default function ShowBooking() {
 											days={daysArray}
 											onPrevMonth={goToPreviousMonth}
 											onNextMonth={goToNextMonth}
-											selectedDate={format(
-												new Date(data?.bookingDate),
-												'yyyy-MM-dd'
-											)}
+											selectedDate={data && format(dateVal, 'yyyy-MM-dd')}
 											// selectedDate={'2023-12-17'}
 										/>
 										<section className="mt-12 md:mt-0 md:pl-14">
 											<h2 className="text-base font-semibold leading-6 text-gray-900">
 												Scheduled for{' '}
 												<time
-													dateTime={format(
-														new Date(data?.bookingDate),
-														'yyyy-MM-dd'
-													)}
+													dateTime={data && format(dateVal, 'yyyy-MM-dd')}
 												>
-													{format(
-														new Date(data?.bookingDate),
-														'MMMM d, yyyy'
-													)}
+													{data && format(dateVal, 'yyyy-MM-dd')}
 												</time>
 											</h2>
 											<ol className="mt-4 space-y-1 text-sm leading-6 text-gray-500">
@@ -247,23 +249,20 @@ export default function ShowBooking() {
 														</p>
 														<p className="mt-0.5">
 															<time
-																dateTime={format(
-																	new Date(data?.bookingTime),
-																	'h:mm a'
-																)}
+																dateTime={
+																	data &&
+																	format(timeVal, 'h:mm a')
+																}
 															>
-																{format(
-																	new Date(data?.bookingTime),
-																	'h:mm a'
-																)}
+																{data && format(timeVal, 'h:mm a')}
 															</time>{' '}
 															-{' '}
 															<time
-															// dateTime={setAddTime(
-															// 	data?.bookingTime
-															// )}
+																dateTime={
+																	data && setAddTime(timeVal)
+																}
 															>
-																{setAddTime(data?.bookingTime)}
+																{data && setAddTime(timeVal)}
 															</time>
 														</p>
 													</div>
