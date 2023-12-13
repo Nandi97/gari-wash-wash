@@ -20,15 +20,13 @@ import {
 import Link from 'next/link';
 
 interface BookingForm {
-	name: string;
-	email: string;
-	phoneNumber: string;
+	customer: { name: string; email: string; phoneNumber: string };
 	carWashId: string;
 	carTypeId: string;
+	totalCost: number;
 	bookingDate: string;
-	bookingService: {
-		serviceId: string;
-	}[];
+	bookingTime: string;
+	bookingService: { serviceId: string }[];
 }
 
 interface BookingFormProps {
@@ -55,7 +53,7 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 				.then((response) => response.data),
 	});
 
-	// console.log('Current car wash:', data);
+	console.log('Current car wash:', data);
 	// console.log('Current car wash:', selectedService);
 	const carTypes = data
 		?.filter((item) => item?.serviceId === selectedService)
@@ -64,7 +62,7 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 
 	const serviceCost = data?.find((service) => service?.serviceId === selectedService)?.cost;
 
-	// console.log('Car Wash:', serviceCost);
+	console.log('Car Wash:', serviceCost);
 
 	const goToPreviousMonth = () => {
 		setCurrentMonth((prevMonth) => addMonths(prevMonth, -1));
@@ -103,8 +101,8 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 
 	const [formData, setFormData] = useState<any>(null);
 
-	const handleTimeChange = (e: any) => {
-		const selectedTime = e.target.value;
+	const handleTimeISOConvert = (time: any) => {
+		const selectedTime = time;
 
 		// Get the current date
 		const currentDate = new Date();
@@ -121,14 +119,34 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 			parseInt(minutes, 10)
 		);
 
+		const formattedResult = formatISO(resultDate);
+
+		return formattedResult;
 		// Add one hour to the result date
-		const result1 = addHours(resultDate, 1);
+		// const result1 = addHours(resultDate, 1);
 
 		// Format the result date as ISO string
-		const formattedResult = formatISO(result1);
+		// const formattedResult = formatISO(result1);
 
 		// Set the formatted date in the state
-		setFormData(formattedResult);
+		// setFormData(formattedResult);
+	};
+
+	const handleSubmitForm: SubmitHandler<BookingForm> = (data) => {
+		try {
+			if (dateOfBooking && timeOfBooking && serviceCost) {
+				data.bookingDate = formatISO(new Date(dateOfBooking));
+				data.bookingTime = handleTimeISOConvert(timeOfBooking);
+				data.totalCost = serviceCost;
+			}
+
+			data.carWashId = cwId as any;
+			data.bookingService = [{ serviceId: selectedService }];
+			// console.log('Form Data:', data);
+			onSubmit(data);
+		} catch (error) {
+			console.error('Error in handleSubmitForm:', error);
+		}
 	};
 	// Get the current date in "YYYY-MM-DD" format
 	// const currentDate = new Date().toISOString().split('T')[0];
@@ -136,7 +154,7 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 	// console.log(currentDate);
 
 	return (
-		<form action="" className="bg-secondary-50 p-4 rounded-md">
+		<form onSubmit={handleSubmit(handleSubmitForm)} className="bg-secondary-50 p-4 rounded-md">
 			<div className="space-y-12">
 				<div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
 					<div>
@@ -159,16 +177,16 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 							<input
 								type="text"
 								id="name"
-								{...register('name', { required: true })}
+								{...register('customer.name', { required: true })}
 								className="sm:text-sm w-full bg-secondary-50 bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 							/>
-							{errors.name && (
+							{errors?.customer?.name && (
 								<p className="text-xs text-red-500">Please enter a valid name</p>
 							)}
 						</div>
 						<div className="sm:col-span-3 col-span-1 space-y-1">
 							<label
-								htmlFor="phoneNumber"
+								htmlFor="phone"
 								className="block text-xs font-medium text-secondary-700"
 							>
 								Phone Number
@@ -180,13 +198,17 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 									</span>
 									<input
 										type="text"
-										{...register('phoneNumber')}
-										name="phoneNumber"
-										id="phoneNumber"
+										id="phone"
+										{...register('customer.phoneNumber', { required: true })}
 										className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
 										placeholder="700000000"
 									/>
 								</div>
+								{errors?.customer?.phoneNumber && (
+									<p className="text-xs text-red-500">
+										Please enter a valid Phone Number
+									</p>
+								)}
 							</div>
 						</div>
 						<div className="sm:col-span-4">
@@ -200,7 +222,7 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 								type="email"
 								id="email"
 								className="sm:text-sm w-full bg-white bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
-								{...register('email', {
+								{...register('customer.email', {
 									pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
 									required: true,
 								})}
@@ -413,9 +435,37 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 				</Link>
 				<button
 					type="submit"
-					className="rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+					className={`border w-14 h-8 rounded-md flex items-center justify-center ${
+						isPending
+							? 'bg-slate-600 text-white'
+							: 'bg-secondary-600 text-white hover:bg-secondary-600/90'
+					}  p-1`}
+					disabled={isPending ? true : false}
 				>
-					Save
+					{isPending ? (
+						<span>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								className="text-white h-5 w-5"
+							>
+								<path
+									fill="currentColor"
+									d="M10.14,1.16a11,11,0,0,0-9,8.92A1.59,1.59,0,0,0,2.46,12,1.52,1.52,0,0,0,4.11,10.7a8,8,0,0,1,6.66-6.61A1.42,1.42,0,0,0,12,2.69h0A1.57,1.57,0,0,0,10.14,1.16Z"
+								>
+									<animateTransform
+										attributeName="transform"
+										dur="0.75s"
+										repeatCount="indefinite"
+										type="rotate"
+										values="0 12 12;360 12 12"
+									/>
+								</path>
+							</svg>
+						</span>
+					) : (
+						<span>Save</span>
+					)}
 				</button>
 			</div>
 		</form>

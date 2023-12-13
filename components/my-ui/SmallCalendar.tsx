@@ -69,37 +69,41 @@ export default function SmallCalendar({
 					days?.map((day, dayIdx) => (
 						<div
 							key={day?.date}
-							className={classNames(
-								'py-1.5 hover:bg-gray-100 focus:z-10',
-								day?.isCurrentMonth ? 'bg-white' : 'bg-gray-50',
-								day?.isSelected ||
-									(day.date === selectedDate &&
-										'font-semibold text-white bg-primary-500'),
-								!day?.isSelected &&
-									day?.isCurrentMonth &&
-									!day?.isToday &&
-									'text-gray-900',
-								!day?.isSelected &&
-									!day?.isCurrentMonth &&
-									!day?.isToday &&
-									'text-gray-400',
-								day?.isToday && !day?.isSelected && 'text-primary-600',
-								dayIdx === 0 && 'rounded-tl-lg',
-								dayIdx === 6 && 'rounded-tr-lg',
-								dayIdx === days?.length - 7 && 'rounded-bl-lg',
-								dayIdx === days?.length - 1 && 'rounded-br-lg'
-							)}
+							className={classNames(dayIdx > 6 && 'border-t border-gray-200', 'py-2')}
 						>
-							<time
-								dateTime={day?.date}
+							<div
 								className={classNames(
-									'mx-auto flex h-7 w-7 items-center justify-center rounded-full',
-									day.isSelected && day.isToday && 'bg-primary-600',
-									day?.isSelected && !day?.isToday && 'bg-gray-900'
+									'py-1.5 hover:bg-gray-100 focus:z-10',
+									day?.isCurrentMonth ? 'bg-white' : 'bg-gray-50',
+									day?.isSelected ||
+										(day?.date === selectedDate &&
+											'font-semibold text-white bg-primary-500'),
+									!day?.isSelected &&
+										day?.isCurrentMonth &&
+										!day?.isToday &&
+										'text-gray-900',
+									!day?.isSelected &&
+										!day?.isCurrentMonth &&
+										!day?.isToday &&
+										'text-gray-400',
+									day?.isToday && !day?.isSelected && 'text-primary-600',
+									dayIdx === 0 && 'rounded-tl-lg',
+									dayIdx === 6 && 'rounded-tr-lg',
+									dayIdx === days?.length - 7 && 'rounded-bl-lg',
+									dayIdx === days?.length - 1 && 'rounded-br-lg'
 								)}
 							>
-								{day?.date?.split('-')?.pop()?.replace(/^0/, '')}
-							</time>
+								<time
+									dateTime={day?.date}
+									className={classNames(
+										'mx-auto flex h-7 w-7 items-center justify-center rounded-full',
+										day.isSelected && day.isToday && 'bg-primary-600',
+										day?.isSelected && !day?.isToday && 'bg-gray-900'
+									)}
+								>
+									{day?.date?.split('-')?.pop()?.replace(/^0/, '')}
+								</time>
+							</div>
 						</div>
 					))}
 			</div>

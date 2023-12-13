@@ -22,7 +22,7 @@ export default async function Nav({ pageTitle }: any) {
 					<Image
 						height={64}
 						width={64}
-						className="object-contain w-5 h-5"
+						className="object-contain"
 						src={logo}
 						alt="OCO Logo"
 					/>

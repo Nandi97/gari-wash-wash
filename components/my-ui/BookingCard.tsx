@@ -75,11 +75,11 @@ export default function BookingCard({
 						</table>
 					</div>
 				</div>
-				<div className="w-full py-1 rounded-md">
+				<div className="w-full py-1 h-20 rounded-md">
 					<Map
 						className="aspect-video w-full h-full pb-2"
 						// width="200"
-						// height="160"
+						height="180"
 						center={[lat, long]}
 						zoom={13}
 					>
