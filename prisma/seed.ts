@@ -105,18 +105,32 @@ async function main() {
 		});
 	}
 
+	// Find an existing area
+	const existingArea = await prisma.area.findUnique({
+		where: { name: 'Nyayo Highrise' },
+	});
+
+	if (!existingArea) {
+		console.error('Could not find an existing area.');
+		return;
+	}
+
 	//Random Car Wash
 	const randomCarWash = await prisma.carWash.upsert({
-		where: { name: 'Weissnat, Fay and Nolan' },
+		where: { name: 'Shine In Sparkles Car Wash And Auto Care Centre' },
 		update: {},
 		create: {
-			name: 'Weissnat, Fay and Nolan',
-			landmark: '8129 Longview Drive',
-			lat: -1.318362,
-			long: 36.787535,
-			logo: `https://picsum.photos/id/${randomNum}/300/300`,
-			path: 'weissnat-fay-nolan',
+			name: 'Shine In Sparkles Car Wash And Auto Care Centre',
+			landmark: 'Muthangari Rd',
+			lat: -1.2875333,
+			long: 36.7655647,
+			branch: 'Main',
+			logo: `https://lh5.googleusercontent.com/p/AF1QipO7L6QO9WKEfw3Xn-OuUOwwBC1Xqzmf2s5TVi-t=w426-h240-k-no`,
+			path: 'shine-in-sparkles',
 			bookingLeadTime: 1,
+			area: {
+				connect: { id: existingArea.id },
+			},
 		},
 	});
 
