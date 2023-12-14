@@ -7,6 +7,7 @@ import './globals.css';
 import { Providers } from './auth/provider';
 import Nav from '@/components/layouts/Nav';
 import QueryWrapper from './QueryWrapper';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const roboto = Roboto({
 	subsets: ['latin'],
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 						<main className="overflow-y-auto flex flex-col h-screen  bg-gradient-to-br from-primary-500/10 to-secondary-500/10 p-2">
 							<div className="p-4 my-2  rounded-lg shadow-lg bg-primary-100 overflow-y-auto flex flex-col h-full ">
 								{children}
+								<SpeedInsights />
 							</div>
 						</main>
 					</Providers>

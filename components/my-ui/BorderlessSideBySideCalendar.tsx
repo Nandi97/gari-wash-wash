@@ -40,7 +40,7 @@ export default function BorderlessSideBySideCalendar({
 }: CalendarProps) {
 	const weekdays = getWeekDays();
 
-	console.log(days);
+	// console.log(days);
 	return (
 		<>
 			<div className="md:pr-14">

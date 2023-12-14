@@ -78,11 +78,11 @@ export default function ShowBooking() {
 
 	return (
 		<div className="flex bg-primary-50 z-[6] fixed overflow-y-auto top-0 left-0 w-full h-full">
-			<div className="bg-primary-100 w-full h-full flex justify-center">
-				<div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+			<div className="bg-primary-100 w-full h-full flex justify-center px-4 py-16">
+				<div className="mx-auto max-w-3xl   sm:px-6 sm:py-24 lg:px-8">
 					<div className="max-w-xl">
-						<h1 className="text-base font-medium text-indigo-600">Thank you !</h1>
-						<h1 className="text-3xl font-medium text-indigo-600">
+						<h1 className="text-base font-medium text-primary-600">Thank you !</h1>
+						<h1 className="text-3xl font-medium text-primary-600">
 							{data?.customer?.name}
 						</h1>
 						<p className="mt-2 text-4xl font-bold tracking-tight sm:text-5xl">
@@ -94,16 +94,12 @@ export default function ShowBooking() {
 							<dt className="text-gray-900">
 								Booking Details have been emailed to you at:
 							</dt>
-							<dd className="mt-2 text-indigo-600">{data?.customer?.email}</dd>
+							<dd className="mt-2 text-primary-600">{data?.customer?.email}</dd>
 						</dl>
 					</div>
 
-					<div className="mt-10 border-t border-gray-200">
-						<h2 className="sr-only">Your order</h2>
-
-						<h3 className="sr-only">Items</h3>
-
-						<div className="flex space-x-6 border-b border-gray-200 py-10">
+					<div className="md:mt-10 mt-5 border-t border-gray-200">
+						<div className="flex space-x-6 border-b border-gray-200 md:py-10">
 							<div className="flex flex-auto flex-col">
 								{data?.bookingService?.map((item: any) => (
 									<div key={item?.id}>
@@ -148,9 +144,9 @@ export default function ShowBooking() {
 							<h3 className="sr-only">Your information</h3>
 
 							<h4 className="sr-only">Addresses</h4>
-							<dl className="grid grid-cols-2 gap-x-6 py-10 text-sm">
-								<div>
-									<dt className="font-medium text-gray-900">Shipping address</dt>
+							<dl className="grid grid-cols-2 md:gap-x-4 gap-y-4 md:gap-y-0 py-10 text-sm">
+								<div className="md:col-span-1 col-span-2">
+									<dt className="font-medium text-gray-900">Address</dt>
 									<dd className="mt-2 text-gray-700">
 										<address className="not-italic">
 											<span className="block">
@@ -162,7 +158,7 @@ export default function ShowBooking() {
 										</address>
 									</dd>
 								</div>
-								<div>
+								<div className="md:col-span-1 col-span-2">
 									{data?.carWash?.lat &&
 										data?.carWash?.long &&
 										data.carWash.name && (
@@ -195,7 +191,7 @@ export default function ShowBooking() {
 							</dl>
 
 							<h4 className="sr-only">Payment</h4>
-							<dl className="grid grid-cols-2 gap-x-6 border-t border-gray-200 py-10 text-sm">
+							<dl className="grid md:grid-cols-2 md:gap-x-6 border-t border-gray-200 md:py-10 py-5 text-sm">
 								<div>
 									<dt className="font-medium text-gray-900">Payment</dt>
 									<dd className="mt-2 text-gray-700 flex flex-col space-y-2">
@@ -218,11 +214,11 @@ export default function ShowBooking() {
 								</div>
 							</dl>
 
-							<h3 className="sr-only">Summary</h3>
+							<h3 className="sr-only">Calendar</h3>
 
 							<dl className="space-y-6 border-t border-gray-200 pt-10 text-sm">
 								<div className="flex justify-between">
-									<div className="md:grid md:grid-cols-2 md:divide-x md:divide-gray-200">
+									<div className="md:grid md:grid-cols-2 w-full justify-center flex flex-col md:divide-x md:divide-gray-200">
 										<BorderlessSideBySideCalendar
 											month={format(currentMonth, 'MMMM')}
 											year={format(currentMonth, 'yyyy')}

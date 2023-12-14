@@ -1,5 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { sendMail } from '@/services/mailService';
+import { Email } from '../../../../components/email-templates/ClientBookingConfirmation';
 import prisma from '@/lib/prisma';
+import { Resend } from 'resend';
 
 interface FormData {
 	customer: { name: string; email: string; phoneNumber: string };
@@ -11,12 +14,53 @@ interface FormData {
 	bookingService: { serviceId: string }[];
 }
 
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	if (req.method === 'POST') {
 		try {
 			const formData: FormData = req.body;
 
-			// console.log(formData);
+			// Check if formData is available
+			if (!formData) {
+				return res.status(400).json({ error: 'Missing formData in the request.' });
+			}
+
+			const res1 = await prisma.carWash.findUnique({
+				where: { id: formData.carWashId },
+				select: {
+					name: true,
+					landmark: true,
+					lat: true,
+					long: true,
+					area: {
+						select: {
+							id: true,
+							name: true,
+							constituencyId: true,
+							constituency: {
+								select: {
+									id: true,
+									name: true,
+									townId: true,
+									town: {
+										select: {
+											id: true,
+											name: true,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			});
+
+			// Check if res1 is available
+			if (!res1) {
+				return res.status(400).json({ error: 'Car wash data not found.' });
+			}
+
 			const result = await prisma.booking.create({
 				data: {
 					carWash: {
@@ -48,6 +92,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					},
 				},
 			});
+
+			const subject = `Booking Confirmed for ${res1?.name}`;
+			const toEmail = ['cartezalvin@gmail.com'];
+			const emailHtml = Email({ data: formData, carWash: res1 });
+			const text = `Thank you ! ${formData?.customer?.name}. You're booking at ${res1?.name} has been confirmed`;
+			const data = await resend.emails.send({
+				from: 'onboarding@resend.dev',
+				to: toEmail,
+				subject: subject,
+				text: text,
+				react: emailHtml,
+			});
+
 			res.status(200).json(result);
 		} catch (err: any) {
 			console.log('Error when creating Booking', err.message);

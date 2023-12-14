@@ -26,7 +26,7 @@ export default function CreateBooking() {
 		},
 		onSuccess: (data: any) => {
 			// console.log(data);
-			toast.success('Car Wash Was Successful', { id: toastId });
+			toast.success('Booking Successful. Confirmation Email Sent', { id: toastId });
 			router.push(`/booking/${data?.carWashId}/confirmed/${data?.id}`);
 		},
 	});

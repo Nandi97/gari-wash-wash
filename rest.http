@@ -18,30 +18,30 @@ Content-Type: application/json
   "lat": 1.234567,
   "long": 45.678901,
   "logo": "path/to/test/logo.png",
-  "areaId": "clq40afkz000q1p47mkccsj17",
+  "areaId": "clq4v2spn000p6yr6qrgdlmwy",
   "bookingLeadTime": 1,
   "carWashServices": [
     {
-      "serviceId": "clq40afj800031p47fh0bahiw",
+      "serviceId": "clq4v2sme00036yr6ieh07csu",
       "cost": 300,
       "carTypes": [
         {
-          "id": "clq40afk500081p47k5gpkxoc"
+          "id": "clq4v2sob00086yr6wdfud3l6"
         },
         {
-          "id": "clq40afkd00091p47bx3ir8nv"
+          "id": "clq4v2sos00096yr6stx3feyx"
         }
       ]
     },
     {
-      "serviceId": "clq40afjn00051p470pci971y",
-      "cost": 1000,
+      "serviceId": "clq4v2smw00046yr69uibkzd3",
+      "cost": 200,
       "carTypes": [
         {
-          "id": "clq40afkd00091p47bx3ir8nv"
+          "id": "clq4v2sos00096yr6stx3feyx"
         },
         {
-          "id": "clq40afkm000a1p47thw9025t"
+          "id": "clq4v2sp6000a6yr6duilekgh"
         }
       ]
     }
