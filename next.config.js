@@ -58,6 +58,14 @@ const nextConfig = {
 				protocol: 'https',
 				hostname: 'picsum.photos',
 			},
+			{
+				protocol: 'https',
+				hostname: 'lh5.googleusercontent.com',
+			},
+			{
+				protocol: 'https',
+				hostname: 'uploadthing.com',
+			},
 		],
 	},
 	typescript: {

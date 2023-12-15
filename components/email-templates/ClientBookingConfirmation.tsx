@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import * as React from 'react';
 import { Tailwind, Font, Head } from '@react-email/components';
 import { format, add } from 'date-fns';
@@ -61,7 +62,7 @@ export const Email: React.FC<Readonly<ClientBookingConfirmationProps>> = ({ data
 			}}
 		>
 			<Head>
-				<title>Purchase Order Email</title>
+				<title>Booking Confirmation Email</title>
 				<Font
 					fontFamily="Roboto"
 					fallbackFontFamily="Verdana"
@@ -73,99 +74,97 @@ export const Email: React.FC<Readonly<ClientBookingConfirmationProps>> = ({ data
 					fontStyle="normal"
 				/>
 			</Head>
+			<section className="max-w-2xl px-6 py-8 mx-auto bg-primary-50 dark:bg-gray-900">
+				<main className="mt-8">
+					<h2 className="text-gray-700 dark:text-gray-200">Hi {data?.customer?.name},</h2>
 
-			<body className="overflow-y-auto flex flex-col max-h-96  bg-gradient-to-br from-primary-500/10 to-secondary-500/10 p-2">
-				<div
-					style={{
-						display: 'flex',
-						overflowY: 'auto',
-						position: 'fixed',
-						top: '0',
-						left: '0',
-						width: '100%',
-						height: '100%',
-						zIndex: '6',
-						backgroundColor: '#eef6ff',
-					}}
-				>
-					<div className="bg-primary-100 w-full h-full flex justify-center px-4 py-8">
-						<div className="mx-auto max-w-3xl">
-							<div className="max-w-xl">
-								<h1 className="text-base font-medium text-primary-600">
-									Thank you !
-								</h1>
-								<h1 className="text-1xl font-medium text-primary-600">
-									{data?.customer?.name}
-								</h1>
-								<p className="mt-2 text-2xl font-bold text-gray-900 tracking-tight sm:text-5xl">
-									You have Made A booking at
-									<br /> {carWash?.name}
-								</p>
-							</div>
+					<p className="mt-2 leading-loose text-gray-600 dark:text-gray-300">
+						Your Car wash Booking has been made at <br />
+						<span className="font-semibold ">{carWash?.name}</span>.
+					</p>
 
-							<div className="text-sm w-full grid grid-cols-3">
-								<div className="col-span-1 w-full">
-									<h2 className="text-base font-semibold leading-6 text-gray-900">
-										Scheduled for{' '}
-										<time dateTime={data && format(dateVal, 'yyyy-MM-dd')}>
-											{data && format(dateVal, 'yyyy-MM-dd')}
-										</time>
-									</h2>
-									<ol className="mt-4 w-full space-y-1 text-sm leading-6 text-gray-500">
-										<li className="group flex items-center space-x-4 rounded-xl p-2 focus-within:bg-gray-100 hover:bg-gray-100">
-											<div className="flex-auto">
-												<p className="text-gray-900">A booking</p>
-												<p className="mt-0.5">
-													<time
-														dateTime={data && format(timeVal, 'h:mm a')}
-													>
-														{data && format(timeVal, 'h:mm a')}
-													</time>{' '}
-													-{' '}
-													<time dateTime={data && setAddTime(timeVal)}>
-														{data && setAddTime(timeVal)}
-													</time>
-												</p>
-											</div>
-										</li>
-									</ol>
-								</div>
-								<div className="col-span-1 w-full">
-									<p className="font-medium text-gray-900">Price:</p>
-									<p className="ml-2 text-gray-700">KSH {data?.totalCost}</p>
-								</div>
-								<div className="col-span-1 w-full">
-									<div className="grid grid-cols-2 gap-2 text-sm">
-										<div className="md:col-span-1 col-span-2">
-											<p className="font-medium text-gray-900">Address</p>
-											<div className="mt-2 text-gray-700">
-												<address className="not-italic">
-													<span className="block">
-														{carWash?.area?.constituency?.town?.name},
-														{carWash?.area?.constituency?.name},
-														{carWash?.area?.name}
-													</span>
-													<span className="block">
-														{carWash?.landmark}
-													</span>
-												</address>
-												<span>
-													<a
-														className="text-primary-700 underline font-semibold"
-														href={`http://www.google.com/maps/place/${carWash?.lat},${carWash?.long}`}
-													>
-														Open Maps For Directions
-													</a>
-												</span>
-											</div>
-										</div>
+					<div className="px-6 py-2 mt-2 w-full text-sm font-medium tracking-wider text-gray-600 capitalize">
+						<div>
+							Scheduled for
+							<time dateTime={data && format(dateVal, 'do, MMMM yyyy')}>
+								{data && format(dateVal, 'do, MMMM yyyy')}
+							</time>
+							<ol className="mt-1 w-full space-y-1 text-sm text-gray-500">
+								<li className="group flex items-center  rounded-xl focus-within:bg-gray-100 hover:bg-gray-100">
+									<div>
+										<p className="text-gray-900 font-semibold">
+											Booking Time:{' '}
+										</p>
+										<p className="mt-0.5">
+											<time dateTime={data && format(timeVal, 'h:mm a')}>
+												{data && format(timeVal, 'h:mm a')}
+											</time>{' '}
+											-{' '}
+											<time dateTime={data && setAddTime(timeVal)}>
+												{data && setAddTime(timeVal)}
+											</time>
+										</p>
 									</div>
-								</div>
+								</li>
+							</ol>
+							<div className="flex items-center">
+								<p className="font-semibold text-gray-900">Price :</p>{' '}
+								<p className="ml-2 text-gray-700">KSH {data?.totalCost}</p>
 							</div>
 						</div>
 					</div>
-				</div>
-			</body>
+					<div className="px-6 py-2 mt-2 text-sm font-medium tracking-wider text-primary-600 capitalize">
+						<p className=" text-gray-900 font-semibold">Address :</p>
+						<div className="mt-1 text-gray-700">
+							<address className="not-italic">
+								<span className="block">
+									{carWash?.area?.constituency?.town?.name},{' '}
+									{carWash?.area?.constituency?.name}, {carWash?.area?.name}
+								</span>
+								<span className="block">Along/ Close to {carWash?.landmark}</span>
+							</address>
+							<span>
+								<a
+									className="text-primary-700 underline hover:text-primary-700/70 font-semibold"
+									href={`http://www.google.com/maps/place/${carWash?.lat},${carWash?.long}`}
+								>
+									Open Maps For Directions
+								</a>
+							</span>
+						</div>
+					</div>
+				</main>
+
+				<footer className="mt-8">
+					<p className="text-gray-500 dark:text-gray-400">
+						This email was sent to{' '}
+						<a
+							href={`mailto:${data?.customer?.email}`}
+							className="text-primary-600 hover:underline dark:text-primary-400"
+							target="_blank"
+						>
+							{data?.customer?.email}
+						</a>
+						. If you&apos;d rather not receive this kind of email, you can{' '}
+						<a
+							href="#"
+							className="text-primary-600 hover:underline dark:text-primary-400"
+						>
+							manage your email preferences
+						</a>
+						.
+					</p>
+
+					<p className="mt-3 text-gray-500 dark:text-gray-400">
+						© {new Date().getFullYear()} {carWash?.name}. All Rights Reserved.
+					</p>
+					<img
+						className="w-auto h-3"
+						src="https://utfs.io/f/e43a6157-f92e-4030-b447-65073bf55b79-9zv8vt.png"
+						alt="logo"
+					/>
+				</footer>
+			</section>
 		</Tailwind>
 	);
 };

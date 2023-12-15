@@ -1,8 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { sendMail } from '@/services/mailService';
-import { Email } from '../../../../components/email-templates/ClientBookingConfirmation';
+import { Email } from '@/components/email-templates/ClientBookingConfirmation';
 import prisma from '@/lib/prisma';
-import { Resend } from 'resend';
+import { render } from '@react-email/render';
+import * as React from 'react';
 
 interface FormData {
 	customer: { name: string; email: string; phoneNumber: string };
@@ -14,7 +15,7 @@ interface FormData {
 	bookingService: { serviceId: string }[];
 }
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	if (req.method === 'POST') {
@@ -33,6 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					landmark: true,
 					lat: true,
 					long: true,
+					logo: true,
 					area: {
 						select: {
 							id: true,
@@ -94,16 +96,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			});
 
 			const subject = `Booking Confirmed for ${res1?.name}`;
-			const toEmail = ['cartezalvin@gmail.com'];
-			const emailHtml = Email({ data: formData, carWash: res1 });
-			const text = `Thank you ! ${formData?.customer?.name}. You're booking at ${res1?.name} has been confirmed`;
-			const data = await resend.emails.send({
-				from: 'onboarding@resend.dev',
-				to: toEmail,
-				subject: subject,
-				text: text,
-				react: emailHtml,
-			});
+			const toEmail = 'alvin_kigen@yahoo.com';
+			const htmlContent = render(<Email data={formData} carWash={res1} />);
+			const optText = `Thank you ! ${formData?.customer?.name}. You're booking at ${res1?.name} has been confirmed`;
+
+			await sendMail({ toEmail, subject, htmlContent, optText });
 
 			res.status(200).json(result);
 		} catch (err: any) {

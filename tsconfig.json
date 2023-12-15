@@ -22,6 +22,6 @@
 			"@/*": ["./*"]
 		}
 	},
-	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "lib/validate.js", "components/my-ui/Map/Map.jsx", "components/email-templates/ClientBookingConfirmation.tsx"],
+	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "lib/validate.js", "components/my-ui/Map/Map.jsx", "components/email-templates/ClientBookingConfirmation.tsx", "pages/api/booking/post/index.tsx"],
 	"exclude": ["node_modules"]
 }

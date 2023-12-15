@@ -181,9 +181,8 @@ model CarType {
   id   String @id @default(cuid())
   type String
 
-  booking          Booking[]
-  carWashServiceId String?
-  carWashService   CarWashService? @relation(fields: [carWashServiceId], references: [id])
+  booking         Booking[]
+  carWashServices CarWashService[]
 
   deletedAt DateTime?
   createdAt DateTime? @default(now())
