@@ -175,6 +175,7 @@ model Service {
   createdAt      DateTime?        @default(now())
   updatedAt      DateTime?        @updatedAt
   BookingService BookingService[]
+  CarTypeCost    CarTypeCost[]
 }
 
 model CarType {
@@ -184,9 +185,10 @@ model CarType {
   booking         Booking[]
   carWashServices CarWashService[]
 
-  deletedAt DateTime?
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+  deletedAt   DateTime?
+  createdAt   DateTime?     @default(now())
+  updatedAt   DateTime?     @updatedAt
+  CarTypeCost CarTypeCost[]
 }
 
 model CarWashService {
@@ -199,7 +201,9 @@ model CarWashService {
 
   carTypes CarType[]
 
-  cost   Float // Cost of the service at this car wash
+  // Relationship to represent the cost of each CarType for a specific Service
+  carTypeCosts CarTypeCost[]
+
   status Boolean @default(true)
 
   duration Float?
@@ -209,6 +213,21 @@ model CarWashService {
   deletedAt DateTime?
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
+}
+
+model CarTypeCost {
+  id        String  @id @default(cuid())
+  carType   CarType @relation(fields: [carTypeId], references: [id])
+  carTypeId String
+  service   Service @relation(fields: [serviceId], references: [id])
+  serviceId String
+  cost      Float
+
+  deletedAt        DateTime?
+  createdAt        DateTime?       @default(now())
+  updatedAt        DateTime?       @updatedAt
+  CarWashService   CarWashService? @relation(fields: [carWashServiceId], references: [id])
+  carWashServiceId String?
 }
 
 model CarWash {
@@ -280,6 +299,7 @@ model Customer {
 
   email       String    @unique
   phoneNumber String
+  numberPlate String?
   bookings    Booking[]
 
   deletedAt DateTime?

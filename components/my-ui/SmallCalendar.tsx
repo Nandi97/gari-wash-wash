@@ -41,7 +41,7 @@ export default function SmallCalendar({
 	const weekdays = getWeekDays();
 
 	return (
-		<div className="mt-10 text-center lg:col-start-8 lg:col-end-13 lg:row-start-1 lg:mt-9 xl:col-start-9">
+		<div className="mt-10 w-full text-center lg:col-start-8 lg:col-end-13 lg:row-start-1 lg:mt-9 xl:col-start-9">
 			<div className="flex items-center text-gray-900">
 				<button
 					type="button"

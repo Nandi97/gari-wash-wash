@@ -7,7 +7,7 @@ import {
 	AccordionTrigger,
 	AccordionContent,
 } from '@/components/ui/Accordion';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import logo_placeholder from '@/public/assets/images/logo-placeholder-image.png';
 import CarWashServiceForm from './CarWashServices';
@@ -16,6 +16,25 @@ import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { Item } from '@radix-ui/react-accordion';
 import { Town } from '@/lib/types/town';
+import DuplicateError from './DuplicateError';
+
+interface CarTypeCost {
+	carTypeId: string;
+	serviceId: string;
+	carWashId: string;
+	cost: number;
+}
+
+interface CarType {
+	id: string;
+	type: string;
+}
+
+interface CarWashService {
+	serviceId: string;
+	carTypes: CarType[];
+	carTypeCosts: CarTypeCost[];
+}
 
 interface CarWashForm {
 	name: string;
@@ -26,13 +45,7 @@ interface CarWashForm {
 	lat: number;
 	long: number;
 	bookingLeadTime: number;
-	carWashServices: [
-		{
-			serviceId: string;
-			cost: number;
-			carTypes: any[];
-		},
-	];
+	carWashServices: CarWashService[];
 	areaId: string;
 }
 interface CarWashFormProps {
@@ -50,7 +63,10 @@ const fetchAllTowns = async () => {
 	const response = await axios.get('/api/town/get');
 	return response.data as Array<Town>;
 };
-
+const fetchAllCarTypes = async () => {
+	const response = await axios.get('/api/car-type/get');
+	return response.data as Array<CarType>;
+};
 const fetchAllCarWashServices = async () => {
 	const response = await axios.get('/api/service/get');
 	return response.data as Array<Service>;
@@ -63,6 +79,7 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 	const logoRef = useRef<HTMLInputElement>(null);
 	const [carWashServices, setCarWashServices] = useState<any>([]);
 	const [toggle, setToggle] = useState(false);
+	const [toggleError, setToggleError] = useState(false);
 
 	const { data: towns } = useQuery({
 		queryFn: fetchAllTowns,
@@ -72,6 +89,10 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 	const { data: services } = useQuery({
 		queryFn: fetchAllCarWashServices,
 		queryKey: ['carWashServices'],
+	});
+	const { data: types } = useQuery({
+		queryFn: fetchAllCarTypes,
+		queryKey: ['carTypes'],
 	});
 
 	const constituencies = towns
@@ -87,12 +108,6 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 		)
 		.map((constituency) => constituency.areas)
 		.flat();
-
-	// console.log('Towns:', selectedTown);
-	// console.log('Towns:', selectedConstituency);
-	// console.log('Towns:', constituencies);
-	// console.log('Towns:', areas);
-	// console.log('Car Wash Services:', carWashServices);
 
 	const {
 		register,
@@ -132,6 +147,73 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 		};
 		setCarWashServices([...carWashServices, newItem]);
 	};
+
+	console.log(' Car Wash services,', carWashServices);
+	const [result, setResult] = useState([]);
+
+	useEffect(() => {
+		let hasDuplicate = false;
+
+		const newResult = carWashServices?.reduce((acc, item) => {
+			const existingEntry = acc.find((entry) => entry.serviceId === item.serviceId);
+
+			if (!existingEntry) {
+				acc.push({
+					serviceId: item.serviceId,
+					carTypes: [{ id: item.carTypeId }],
+					carTypeCosts: [
+						{
+							carTypeId: item.carTypeId,
+							serviceId: item.serviceId,
+							carWashId: 'carWashId',
+							cost: parseFloat(item.cost),
+						},
+					],
+				});
+			} else {
+				// Check for duplicates before adding a new carType
+				const isCarTypeDuplicate = existingEntry.carTypes.some(
+					(type) => type.id === item.carTypeId
+				);
+
+				if (!isCarTypeDuplicate) {
+					existingEntry.carTypes.push({ id: item.carTypeId });
+
+					// Check for duplicates before adding a new carTypeCost
+					const isCarTypeCostDuplicate = existingEntry.carTypeCosts.some(
+						(cost) => cost.carTypeId === item.carTypeId
+					);
+
+					if (!isCarTypeCostDuplicate) {
+						existingEntry.carTypeCosts.push({
+							carTypeId: item.carTypeId,
+							serviceId: item.serviceId,
+							carWashId: 'carWashId',
+							cost: parseFloat(item.cost),
+						});
+					} else {
+						console.error(errors);
+						hasDuplicate = true;
+					}
+				} else {
+					console.error(errors);
+					hasDuplicate = true;
+				}
+			}
+
+			return acc;
+		}, []);
+
+		setResult(newResult);
+
+		// Display an error message or take action if a duplicate is found
+		if (hasDuplicate) {
+			setToggleError(true);
+		}
+	}, [carWashServices]);
+
+	// console.log(result);
+
 	const handleRemoveItem = (key: any) => {
 		const updatedServices = carWashServices.filter((item) => item.key !== key);
 		setCarWashServices(updatedServices);
@@ -162,8 +244,8 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 			} else {
 				data.logo = '/assets/images/logo-placeholder-image.png';
 			}
-			if (carWashServices) {
-				data.carWashServices = carWashServices;
+			if (carWashServices && result) {
+				data.carWashServices = result;
 			}
 
 			if (data?.name) {
@@ -499,7 +581,7 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 												Service
 											</th>
 											<th scope="col" className="px-6 py-3">
-												Car Types
+												Car Type
 											</th>
 											<th scope="col" className="px-6 py-3">
 												Cost
@@ -525,9 +607,11 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 													}
 												</td>
 												<td className="px-6 py-4">
-													{item?.carTypes
-														.map((carType) => carType?.type)
-														.join(', ')}
+													{
+														types?.find(
+															(type) => type?.id === item.carTypeId
+														)?.type
+													}
 												</td>
 												<td className="px-6 py-4">{item?.cost} KES</td>
 												<td className="px-6 py-4">
@@ -597,6 +681,7 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 					addCarWashService={handleAddCarWashService}
 				/>
 			)}
+			{toggleError && <DuplicateError setToggle={setToggleError} />}
 		</form>
 	);
 }

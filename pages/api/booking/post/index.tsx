@@ -79,7 +79,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 							create: {
 								name: formData.customer.name,
 								email: formData.customer.email,
-								phoneNumber: formData.customer.phoneNumber,
+								phoneNumber: `+254${formData.customer.phoneNumber}`,
 							},
 						},
 					},

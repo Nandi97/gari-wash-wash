@@ -2,7 +2,22 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 
+interface CarTypeCost {
+	carTypeId: string;
+	serviceId: string;
+	carWashId: string;
+	cost: number;
+}
 
+interface CarType {
+	id: string;
+}
+
+interface CarWashService {
+	serviceId: string;
+	carTypes: CarType[];
+	carTypeCosts: CarTypeCost[];
+}
 
 interface FormData {
 	name: string;
@@ -16,7 +31,7 @@ interface FormData {
 	bookingLeadTime: string;
 	carWashServices: {
 		serviceId: string;
-		cost: string;
+		cost: number;
 		carTypes: {
 			id: string;
 		}[];
@@ -25,8 +40,6 @@ interface FormData {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	if (req.method === 'POST') {
-		// const session = await getServerSession();
-
 		try {
 			const formData: FormData = req.body;
 
@@ -40,14 +53,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					long: parseFloat(formData.long),
 					logo: formData.logo,
 					areaId: formData.areaId,
-					bookingLeadTime: parseFloat('1'),
+					bookingLeadTime: parseFloat(formData.bookingLeadTime),
 					carWashServices: {
 						create: formData.carWashServices.map((item) => ({
 							serviceId: item.serviceId,
-							cost: parseFloat(item.cost),
+							cost: item.cost,
 							carTypes: {
-								connect: item.carTypes.map((type: any) => ({
+								connect: item.carTypes.map((type) => ({
 									id: type.id,
+								})),
+							},
+							carTypeCosts: {
+								create: item.carTypes.map((type) => ({
+									carTypeId: type.id,
+									cost: item.cost,
 								})),
 							},
 						})),
@@ -56,8 +75,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			});
 			res.status(200).json(result);
 		} catch (err: any) {
-			console.log('Error when creating Leave Application', err.message);
-			res.status(403).json({ err: 'Error has occurred while creating leave Application' });
+			console.log('Error when creating Car Wash', err.message);
+			res.status(403).json({ err: 'Error has occurred while creating Car Wash' });
 		}
 	}
 }
