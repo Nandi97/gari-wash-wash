@@ -77,7 +77,6 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 				.then((response) => response.data),
 	});
 
-	// console.log(initialValues);
 	useEffect(() => {
 		if (initialValues === undefined) {
 			setTogglePassword(true);
@@ -96,8 +95,6 @@ export default function StaffForm({ onSubmit, initialValues, isPending }: StaffF
 
 			data.createdById = session.user.id;
 			data.carWashId = session.user.carWash.id;
-
-			// console.log(data);
 
 			onSubmit(data);
 		} catch (error) {

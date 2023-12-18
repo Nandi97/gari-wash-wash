@@ -46,7 +46,6 @@ export default function EditStaff() {
 		carWashId: staffDetails?.carWashId,
 		createdById: staffDetails?.createdById,
 	};
-	// console.log(initialValues);
 
 	const { mutate, isPending } = useMutation({
 		mutationFn: async (data: any) => {
@@ -63,7 +62,6 @@ export default function EditStaff() {
 			}
 		},
 		onSuccess: (data: any) => {
-			// console.log(data);
 			toast.success('Staff Was Successful', { id: toastId });
 			if (data) {
 				router.push(`/car-wash/${data?.carWashId}/staff/${data?.id}`);
@@ -72,8 +70,7 @@ export default function EditStaff() {
 	});
 
 	const handleEditStaff = (data: any) => {
-		console.log('Data:', data);
-		// mutate(data);
+		mutate(data);
 	};
 	return (
 		<div>

@@ -3,8 +3,26 @@ import * as React from 'react';
 import { Tailwind, Font, Head } from '@react-email/components';
 import { format, add } from 'date-fns';
 
+interface ClientConfData {
+	customer: {
+		name: string;
+		phoneNumber: string;
+		email: string;
+		customerCarsDetails: {
+			numberPlate: string;
+			carTypeId: string;
+		}[];
+	};
+	bookingDate: string | number | Date;
+	bookingTime: string | number | Date;
+	totalCost: number;
+	carTypeId: string;
+	carWashId: string;
+	bookingService: { serviceId: string }[];
+}
+
 interface ClientBookingConfirmationProps {
-	data?: any;
+	data: ClientConfData;
 	carWash?: any;
 }
 
@@ -21,8 +39,8 @@ export const Email: React.FC<Readonly<ClientBookingConfirmationProps>> = ({ data
 		}
 	};
 
-	const dateVal = new Date(data?.bookingDate);
-	const timeVal = new Date(data?.bookingTime);
+	const dateVal = new Date(data.bookingDate);
+	const timeVal = new Date(data.bookingTime);
 
 	return (
 		<Tailwind
@@ -110,6 +128,17 @@ export const Email: React.FC<Readonly<ClientBookingConfirmationProps>> = ({ data
 							<div className="flex items-center">
 								<p className="font-semibold text-gray-900">Price :</p>{' '}
 								<p className="ml-2 text-gray-700">KSH {data?.totalCost}</p>
+							</div>
+							<div className="flex items-center">
+								<p className="font-semibold text-gray-900">For Vehicle :</p>{' '}
+								{data &&
+									data.customer.customerCarsDetails.map(
+										(item: any, index: any) => (
+											<p key={index} className="ml-2 text-gray-700">
+												{item.numberPlate}
+											</p>
+										)
+									)}
 							</div>
 						</div>
 					</div>

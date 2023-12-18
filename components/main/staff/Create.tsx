@@ -24,7 +24,6 @@ export default function CreateStaff() {
 			}
 		},
 		onSuccess: (data: any) => {
-			// console.log(data);
 			toast.success('Staff Was Successful', { id: toastId });
 			if (data) {
 				router.push(`/car-wash/${data?.carWashId}/staff/${data?.id}`);
@@ -33,7 +32,6 @@ export default function CreateStaff() {
 	});
 
 	const handleCreateStaff = (data: any) => {
-		// console.log('Data:', data);
 		mutate(data);
 	};
 

@@ -29,13 +29,7 @@ interface FormData {
 	logo: string;
 	areaId: string;
 	bookingLeadTime: string;
-	carWashServices: {
-		serviceId: string;
-		cost: number;
-		carTypes: {
-			id: string;
-		}[];
-	}[];
+	carWashServices: CarWashService[];
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -56,16 +50,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					bookingLeadTime: parseFloat(formData.bookingLeadTime),
 					carWashServices: {
 						create: formData.carWashServices.map((item) => ({
-							serviceId: item.serviceId,
-							cost: item.cost,
+							service: {
+								connect: { id: item.serviceId },
+							},
 							carTypes: {
 								connect: item.carTypes.map((type) => ({
 									id: type.id,
 								})),
 							},
 							carTypeCosts: {
-								create: item.carTypes.map((type) => ({
-									carTypeId: type.id,
+								create: item.carTypeCosts.map((item) => ({
+									carType: {
+										connect: { id: item.carTypeId },
+									},
+									service: {
+										connect: { id: item.serviceId },
+									},
+
 									cost: item.cost,
 								})),
 							},

@@ -13,7 +13,6 @@ interface PageProps {
 }
 
 export default function ReusableBreadcrumbs({ pages }: PageProps) {
-	// console.log(pages);
 	return (
 		<nav className="flex text-xs py-2 sticky top-1 z-20" aria-label="Breadcrumb">
 			<ol role="list" className="flex items-center space-x-2">

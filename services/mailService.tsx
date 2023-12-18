@@ -32,9 +32,7 @@ export const sendMail = async ({ toEmail, subject, htmlContent, optText }: Maile
 	};
 
 	try {
-		// console.log('Mail Options', options);
 		const info = await transporter.sendMail(options);
-		// console.log('Email Sent:', info);
 		return true;
 	} catch (error: any) {
 		console.error('Email Error:', error);

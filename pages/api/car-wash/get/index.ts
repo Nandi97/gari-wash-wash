@@ -17,12 +17,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					lat: true,
 					long: true,
 					branch: true,
+					bookingLeadTime: true,
 					carWashServices: {
 						select: {
 							id: true,
 							carWashId: true,
 							serviceId: true,
-							cost: true,
 							status: true,
 							service: {
 								select: {
@@ -31,6 +31,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 									description: true,
 								},
 							},
+							carTypes: true,
+							carTypeCosts: true,
 						},
 					},
 					areaId: true,

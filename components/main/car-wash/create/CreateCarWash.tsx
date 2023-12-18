@@ -29,7 +29,6 @@ export default function CreateCarWash() {
 	});
 
 	const handleCreateCarWash = (data: any) => {
-		// console.log('Data:', data);
 		mutate(data);
 	};
 	return (

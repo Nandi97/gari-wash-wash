@@ -30,8 +30,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 			const queryParameters: QueryParameters = req.query;
 
-			// console.log(queryParameters?.searchParam);
-
 			if (queryParameters.slug) {
 				const carWashId: string = queryParameters.slug.toString();
 
@@ -82,8 +80,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			let staff = await prisma.user.findMany(options);
 
 			recordCount = await prisma.user.count(countOptions);
-
-			// console.log(staff);
 
 			return res.status(200).json({
 				data: staff,

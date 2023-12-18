@@ -18,7 +18,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			zipPostalCode,
 			image,
 		} = formData;
-		// console.log('FormData:', formData);
 
 		if (!name || !email || !phoneNumber || !createdById || !designationId) {
 			// return new NextResponse('Missing Fields', { status: 400 });
@@ -52,7 +51,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			},
 		});
 		res.status(200).json(result);
-		// console.log('Result:', result);
 	} catch (err: any) {
 		console.log('Error when creating Leave Application', err.message);
 		res.status(403).json({ err: 'Error has occurred while creating leave Application' });

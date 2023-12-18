@@ -17,19 +17,43 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					lat: true,
 					long: true,
 					branch: true,
+					bookingLeadTime: true,
 					carWashServices: {
 						select: {
-							carTypes: true,
 							id: true,
 							carWashId: true,
 							serviceId: true,
-							cost: true,
 							status: true,
 							service: {
 								select: {
 									id: true,
 									name: true,
 									description: true,
+								},
+							},
+
+							carTypeCosts: {
+								select: { carWashServiceId: true, carType: true, cost: true },
+							},
+						},
+					},
+					areaId: true,
+					area: {
+						select: {
+							id: true,
+							name: true,
+							constituencyId: true,
+							constituency: {
+								select: {
+									id: true,
+									name: true,
+									townId: true,
+									town: {
+										select: {
+											id: true,
+											name: true,
+										},
+									},
 								},
 							},
 						},

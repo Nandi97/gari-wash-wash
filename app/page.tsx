@@ -9,11 +9,6 @@ export async function getSessionData() {
 	return session;
 }
 export default async function Home() {
-	// // console.log(session);
-
-	// if (session?.user?.role?.name !== 'Super Admin') {
-	// 	return redirect(`/car-wash/${session?.user?.carWash?.path}`);
-	// }
 	return (
 		<div>
 			<MainDashboard />

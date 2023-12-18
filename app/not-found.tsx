@@ -6,7 +6,6 @@ import { redirect } from 'next/navigation';
 
 export async function getSessionData() {
 	const session: any = await getServerSession(authOptions);
-	// console.log(session);
 	return session;
 }
 

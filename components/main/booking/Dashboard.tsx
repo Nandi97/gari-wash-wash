@@ -29,8 +29,6 @@ export default function Dashboard() {
 		queryKey: ['carwashes'],
 	});
 
-	// console.log('Car Washes:', carWashes);
-
 	const { data: towns } = useQuery<Town[]>({
 		queryFn: fetchAllTowns,
 		queryKey: ['towns'],
@@ -79,7 +77,6 @@ export default function Dashboard() {
 		setSearchParam(searchInput);
 	};
 
-	// console.log('Car Washes:', filter);
 	return (
 		<>
 			<div className="w-full py-4">

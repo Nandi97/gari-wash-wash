@@ -74,7 +74,6 @@ export default function ShowBooking() {
 
 	const dateVal = new Date(data?.bookingDate);
 	const timeVal = new Date(data?.bookingTime);
-	// console.log('Boooking Date & Time:', dateVal, timeVal);
 
 	return (
 		<div className="flex bg-primary-50 z-[6] fixed overflow-y-auto top-0 left-0 w-full h-full">

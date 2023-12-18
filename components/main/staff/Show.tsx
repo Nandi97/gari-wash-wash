@@ -25,7 +25,6 @@ export default function ShowStaff() {
 			}
 		},
 	});
-	// console.log(data);
 
 	return (
 		<div className="bg-primary-50 grid grid-cols-12 gap-2 p-2 rounded-md shadow-md">

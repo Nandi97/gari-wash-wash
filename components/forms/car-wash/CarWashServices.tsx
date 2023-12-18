@@ -41,7 +41,6 @@ export default function CarWashServiceForm({
 		queryFn: fetchAllCarWashServices,
 		queryKey: ['carWashServices'],
 	});
-	// console.log(services);
 	const { data: types } = useQuery({
 		queryFn: fetchAllCarTypes,
 		queryKey: ['carTypes'],

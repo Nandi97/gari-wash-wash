@@ -7,7 +7,26 @@ export type CarWashes = {
 	lat: number;
 	long: number;
 	branch: string;
-	carWashServices: any;
+	carWashServices: {
+		id: string;
+		carWashId: string;
+		serviceId: string;
+		status: true;
+		service: {
+			id: string;
+			name: string;
+			description: string;
+		};
+		carTypeCosts: {
+			carType: {
+				id: string;
+				type: string;
+				deletedAt: null | string;
+			};
+			cost: number;
+		}[];
+	}[];
+
 	areaId: string;
 	area: {
 		id: string;

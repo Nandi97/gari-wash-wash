@@ -14,8 +14,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		try {
 			const formData = req.body;
 
-			// console.log('Form Data;', formData);
-
 			const result = await prisma.staff.update({
 				where: {
 					email: formData.email,

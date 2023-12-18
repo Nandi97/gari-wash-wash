@@ -6,7 +6,15 @@ import { render } from '@react-email/render';
 import * as React from 'react';
 
 interface FormData {
-	customer: { name: string; email: string; phoneNumber: string };
+	customer: {
+		name: string;
+		email: string;
+		phoneNumber: string;
+		customerCarsDetails: {
+			numberPlate: string;
+			carTypeId: string;
+		}[];
+	};
 	carWashId: string;
 	carTypeId: string;
 	totalCost: number;
@@ -80,10 +88,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 								name: formData.customer.name,
 								email: formData.customer.email,
 								phoneNumber: `+254${formData.customer.phoneNumber}`,
+								customerCarsDetails: {
+									create: formData.customer.customerCarsDetails.map((item) => ({
+										numberPlate: item.numberPlate,
+										carType: {
+											connect: { id: item.carTypeId },
+										},
+									})),
+								},
 							},
 						},
 					},
 					totalCost: formData.totalCost,
+
 					bookingService: {
 						create: formData.bookingService.map((item: any) => ({
 							service: {
@@ -94,7 +111,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					},
 				},
 			});
-
 			const subject = `Booking Confirmed for ${res1?.name}`;
 			const toEmail = 'alvin_kigen@yahoo.com';
 			const htmlContent = render(<Email data={formData} carWash={res1} />);

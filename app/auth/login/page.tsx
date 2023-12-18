@@ -26,8 +26,6 @@ export default function SignIn({ initialValues }: LogInFormProps) {
 
 	const { data: session } = useSession();
 
-	// console.log(session);
-
 	const {
 		register,
 		handleSubmit,
@@ -46,8 +44,6 @@ export default function SignIn({ initialValues }: LogInFormProps) {
 					callbackUrl: '/',
 				});
 
-				// console.log(response);
-
 				if (response?.ok) {
 					return response;
 				} else {
@@ -64,8 +60,6 @@ export default function SignIn({ initialValues }: LogInFormProps) {
 		},
 
 		onError: (response: any) => {
-			// console.log(response);
-
 			if (response && response.status) {
 				const { status, data } = response;
 
@@ -95,7 +89,6 @@ export default function SignIn({ initialValues }: LogInFormProps) {
 				toast.success('Car Wash Was Successful', { id: toastId });
 				router.push(data.url);
 			} else {
-				// console.log(data);
 			}
 		},
 	});

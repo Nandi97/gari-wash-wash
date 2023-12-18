@@ -140,7 +140,6 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 	};
 
 	const handleAddCarWashService = (newService: any) => {
-		// console.log('New Car Wash service,', newService);
 		const newItem = {
 			key: carWashServices.length + 1,
 			...newService,
@@ -148,7 +147,6 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 		setCarWashServices([...carWashServices, newItem]);
 	};
 
-	console.log(' Car Wash services,', carWashServices);
 	const [result, setResult] = useState([]);
 
 	useEffect(() => {
@@ -212,8 +210,6 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 		}
 	}, [carWashServices]);
 
-	// console.log(result);
-
 	const handleRemoveItem = (key: any) => {
 		const updatedServices = carWashServices.filter((item) => item.key !== key);
 		setCarWashServices(updatedServices);
@@ -239,8 +235,8 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 	const handleSubmitForm: SubmitHandler<CarWashForm> = (data) => {
 		try {
 			if (selectedLogo) {
-				// data.logo = selectedLogo;
-				data.logo = '/assets/images/logo-placeholder-image.png';
+				data.logo = selectedLogo;
+				// data.logo = '/assets/images/logo-placeholder-image.png';
 			} else {
 				data.logo = '/assets/images/logo-placeholder-image.png';
 			}
@@ -251,7 +247,6 @@ export default function CarWashForm({ onSubmit, initialValues, isPending }: CarW
 			if (data?.name) {
 				data.path = convertToSlug(data?.name);
 			}
-			// console.log('Form Data:', data);
 			onSubmit(data);
 		} catch (error) {
 			console.error('Error in handleSubmitForm:', error);

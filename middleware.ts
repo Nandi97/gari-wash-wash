@@ -3,25 +3,18 @@ import { redirect } from 'next/navigation';
 
 // middleware is applied to all routes, use conditionals to select
 
-export default withAuth(
-	async function middleware(req) {
-		// console.log(req.nextauth.token);
+export default withAuth(async function middleware(req) {}, {
+	pages: {
+		signIn: '/auth/login',
 	},
-	{
-		pages: {
-			signIn: '/auth/login',
-		},
 
-		callbacks: {
-			authorized: ({ req, token }) => {
-				// console.log('Token', token.role.name);
-				// console.log('Request', req);
-				if (token === null) {
-					return false;
-				}
-				return true;
-			},
+	callbacks: {
+		authorized: ({ req, token }) => {
+			if (token === null) {
+				return false;
+			}
+			return true;
 		},
-	}
-);
+	},
+});
 export const config = { matcher: ['/car-wash/:path*'] };

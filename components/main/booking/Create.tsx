@@ -12,7 +12,6 @@ export default function CreateBooking() {
 
 	const { mutate, isPending } = useMutation({
 		mutationFn: async (data: any) => {
-			// console.log('Data:', data);
 			const response = await axios.post('/api/booking/post', data);
 			return response.data;
 		},
@@ -25,14 +24,12 @@ export default function CreateBooking() {
 			}
 		},
 		onSuccess: (data: any) => {
-			// console.log(data);
 			toast.success('Booking Successful. Confirmation Email Sent', { id: toastId });
 			router.push(`/booking/${data?.carWashId}/confirmed/${data?.id}`);
 		},
 	});
 
 	const handleCreateBooking = (data: any) => {
-		// console.log('Data:', data);
 		mutate(data);
 	};
 	return <BookingForm onSubmit={handleCreateBooking} isPending={isPending} />;

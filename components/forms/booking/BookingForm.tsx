@@ -1,7 +1,7 @@
 'use client';
 
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import formatISO from 'date-fns/formatISO';
 import { useParams } from 'next/navigation';
 import { Icon } from '@iconify/react/dist/iconify.js';
@@ -19,7 +19,15 @@ import {
 import Link from 'next/link';
 
 interface BookingForm {
-	customer: { name: string; email: string; phoneNumber: string };
+	customer: {
+		name: string;
+		email: string;
+		phoneNumber: string;
+		customerCarsDetails: {
+			numberPlate: string;
+			carTypeId: string;
+		}[];
+	};
 	carWashId: string;
 	carTypeId: string;
 	totalCost: number;
@@ -34,6 +42,12 @@ interface BookingFormProps {
 	isPending: boolean;
 }
 
+//Fetch A booking
+const fetchDetails = async (slug: string) => {
+	const response = await axios.get(`/api/car-wash-service/get/${slug}`);
+	return response.data;
+};
+
 export default function BookingForm({ onSubmit, initialValues, isPending }: BookingFormProps) {
 	const params = useParams();
 	const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -41,15 +55,20 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 	const [dateOfBooking, setDateOfBooking] = useState<any>();
 	const [timeOfBooking, setTimeOfBooking] = useState<any>();
 	const [selectedService, setSelectedService] = useState<any>();
+	const [selectedCarType, setSelectedCarType] = useState<any>();
+	const [carWashCost, setCarWashCost] = useState<any>();
+	const [numberPlate, setNumberPlate] = useState<any>();
+	const [errorMessage, setErrorMessage] = useState('');
 
 	const { data } = useQuery({
-		queryKey: ['cws', cwId],
-		queryFn: () =>
-			axios
-				.get('/api/car-wash-service/get', {
-					params: { cwId },
-				})
-				.then((response) => response.data),
+		queryKey: ['cws'],
+		queryFn: () => {
+			if (cwId) {
+				return fetchDetails(cwId as string);
+			} else {
+				return Promise.reject(new Error('Car Wash Id Id not provided'));
+			}
+		},
 	});
 
 	const carTypes = data
@@ -57,8 +76,41 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 		.map((item) => item?.carTypes)
 		.flat();
 
-	const serviceCost = data?.find((service) => service?.serviceId === selectedService)?.cost;
+	const carWashService = data?.find((service) => service.serviceId === selectedService);
 
+	useEffect(() => {
+		if (carWashService) {
+			// Find the carTypeCost based on carTypeId
+			const carTypeCost = carWashService.carTypeCosts.find(
+				(cost) => cost.carTypeId === selectedCarType
+			);
+
+			if (carTypeCost) {
+				const cost = carTypeCost.cost;
+				console.log(
+					`Cost for carTypeId ${selectedCarType} and serviceId ${selectedService}: ${cost}`
+				);
+				setCarWashCost(cost);
+			} else {
+				console.log(
+					`No cost found for carTypeId ${selectedCarType} and serviceId ${selectedService}`
+				);
+			}
+		} else {
+			console.log(`No carWashService found for serviceId ${selectedService}`);
+		}
+	}, [carWashService, selectedCarType, selectedService]);
+
+	const handleNumberPlateChange = (e: any) => {
+		const inputValue = e.target.value.toUpperCase(); // Convert to uppercase
+
+		if (/^[A-Z]{2,3}\d{3}[A-Z]{1}$/.test(inputValue) && inputValue.length >= 6) {
+			setNumberPlate(inputValue);
+			setErrorMessage('');
+		} else {
+			setErrorMessage('Invalid number plate format.');
+		}
+	};
 	const startOfMonthDate = startOfMonth(currentMonth);
 	const endOfMonthDate = endOfMonth(currentMonth);
 
@@ -111,15 +163,15 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 
 	const handleSubmitForm: SubmitHandler<BookingForm> = (data) => {
 		try {
-			if (dateOfBooking && timeOfBooking && serviceCost) {
+			if (dateOfBooking && timeOfBooking && carWashCost && selectedCarType) {
 				data.bookingDate = formatISO(new Date(dateOfBooking));
 				data.bookingTime = handleTimeISOConvert(timeOfBooking);
-				data.totalCost = serviceCost;
+				data.totalCost = carWashCost;
+				data.carTypeId = selectedCarType;
 			}
-
+			data.customer.customerCarsDetails = [{ numberPlate, carTypeId: selectedCarType }];
 			data.carWashId = cwId as any;
 			data.bookingService = [{ serviceId: selectedService }];
-			// console.log('Form Data:', data);
 			onSubmit(data);
 		} catch (error) {
 			console.error('Error in handleSubmitForm:', error);
@@ -205,6 +257,23 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 								})}
 								placeholder="email@email.com"
 							/>
+						</div>
+						<div className="sm:col-span-2">
+							<label
+								htmlFor="numberPlate"
+								className="block text-xs font-medium text-secondary-700"
+							>
+								Number Plate
+							</label>
+							<input
+								type="text"
+								id="numberPlate"
+								className="sm:text-sm w-full uppercase bg-white bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border border-secondary-300 text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+								value={numberPlate}
+								onChange={handleNumberPlateChange}
+								placeholder="KAA000A"
+							/>
+							{errorMessage && <p className="text-xs text-red-500">{errorMessage}</p>}
 						</div>
 					</div>
 				</div>
@@ -366,13 +435,11 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 									Car Type
 								</label>
 								<select
-									{...register('carTypeId', { required: true })}
 									id="carTypeId"
-									className={`${
-										errors.carTypeId
-											? 'bg-red-50 border-red-300'
-											: 'bg-white border-secondary-300'
-									} sm:text-sm w-full  bg-opacity-70 border-1 focus:shadow-inner shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1`}
+									name="carTypeId"
+									value={selectedCarType}
+									onChange={(e) => setSelectedCarType(e.target.value)}
+									className=" sm:text-sm w-full  bg-opacity-70 border-1 focus:shadow-inner bg-white border-secondary-300 shadow-accent-300  focus:border-secondary-500 block p-2.5 h-8  px-3 py-1 shadow-secondary-300 rounded-md border text-sm font-medium leading-4 text-secondary-700 shadow-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
 									disabled={selectedService ? false : true}
 								>
 									<option
@@ -393,6 +460,14 @@ export default function BookingForm({ onSubmit, initialValues, isPending }: Book
 										<></>
 									)}
 								</select>
+							</div>
+							<div className="col-span-full flex flex-col">
+								<span className="text-base font-semibold leading-7 text-gray-900">
+									Total due is
+								</span>
+								<span className="mt-1 text-sm leading-6 text-gray-600">
+									KSH : {carWashCost}
+								</span>
 							</div>
 						</div>
 					</div>

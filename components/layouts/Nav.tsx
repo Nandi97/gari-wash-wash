@@ -14,7 +14,6 @@ export async function getSessionData() {
 
 export default async function Nav({ pageTitle }: any) {
 	const session: any = await getSessionData();
-	// console.log(session);
 	return (
 		<nav className="w-full shadow-sm shadow-slate-400 bg-primary-400/30 h-10 justify-between p-1 flex items-center px-3">
 			<div className="flex items-center flex-shrink-0 divide-x divide-secondary-300 space-x-3">

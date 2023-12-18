@@ -21,8 +21,6 @@ export default function IndexStaff() {
 	const router = useRouter();
 	const carWashId = params?.['car-wash-id'];
 
-	// console.log(pathname);
-
 	const { data, isPending } = useQuery({
 		queryKey: ['detailStaff', carWashId, searchParam],
 		queryFn: () =>
@@ -35,14 +33,11 @@ export default function IndexStaff() {
 
 	const staff: StaffType[] = data?.data;
 
-	// console.table(staff);
-
 	const handleSearch = (searchInput: any) => {
 		setSearchParam(searchInput);
 	};
 
 	const newStaffMember = () => {
-		// console.log();
 		router.push(`${pathname}/create`);
 	};
 
@@ -87,8 +82,6 @@ export default function IndexStaff() {
 			current: true,
 		},
 	];
-
-	// console.log(pages);
 
 	return (
 		<div className="">
