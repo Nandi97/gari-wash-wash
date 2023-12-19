@@ -1,3 +1,16 @@
+#  Dear Programmer:
+#  As I write this code, only God and
+#  I knowhow it works.
+#  In a few months only god will know it!
+#  
+#  Therefore if you try to optimize the code 
+#  and it fails
+#  please increase this counter as a warning for the next person:
+#  
+#  Total hours wasted here = [![wakatime](https://wakatime.com/badge/user/162dd9c9-7c7f-462e-81ef-741960841996/project/018b680c-65b3-4014-9138-848b81cd3c30.svg)](https://wakatime.com/badge/user/162dd9c9-7c7f-462e-81ef-741960841996/project/018b680c-65b3-4014-9138-848b81cd3c30)
+#  
+
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 # Gari Wash Wash
